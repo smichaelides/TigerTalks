@@ -7,7 +7,11 @@ import type { Message } from '../types';
 // Import avatar images
 import tigerAvatar from '../assets/tiggy.png';
 
-function MainPage() {
+interface MainPageProps {
+  onLogout: () => void;
+}
+
+function MainPage({ onLogout }: MainPageProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +66,7 @@ function MainPage() {
 
   return (
     <div className="app">
-      <Header />
+      <Header onLogout={onLogout} />
       
       <main className={`chat-container ${hasMessages ? 'chat-container-with-messages' : ''}`}>
         {!hasMessages ? (

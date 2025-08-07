@@ -2,7 +2,11 @@ import { useState, useRef, useEffect } from 'react';
 import { FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
 import princetonLogo from '../assets/princeton.png';
 
-function Header() {
+interface HeaderProps {
+  onLogout: () => void;
+}
+
+function Header({ onLogout }: HeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -23,7 +27,7 @@ function Header() {
   };
 
   const handleLogoutClick = () => {
-    console.log('Logout clicked');
+    onLogout();
     setIsDropdownOpen(false);
   };
 
