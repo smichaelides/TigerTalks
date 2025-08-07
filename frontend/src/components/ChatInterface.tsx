@@ -58,7 +58,7 @@ function ChatInterface({
                 <img src={getAvatar()} alt="Tiger AI" />
               </div>
               <div className="message-bubble ai-bubble">
-                <p className="message-text">Thinking...</p>
+                <p className="message-text">Tiggy is thinking...</p>
               </div>
             </div>
           </div>
