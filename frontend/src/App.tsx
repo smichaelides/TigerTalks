@@ -24,16 +24,18 @@ function App() {
     setIsLoggedIn(false);
   };
 
-  if (!isLoggedIn) {
-    return (
-      <LoginPage 
-        onLogin={handleLogin}
-        isLoading={isLoading}
-      />
-    );
-  }
-
-  return <MainPage onLogout={handleLogout} />;
+  return (
+    <>
+      {!isLoggedIn ? (
+        <LoginPage 
+          onLogin={handleLogin}
+          isLoading={isLoading}
+        />
+      ) : (
+        <MainPage onLogout={handleLogout} />
+      )}
+    </>
+  );
 }
 
 export default App;
