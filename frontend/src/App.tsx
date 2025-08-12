@@ -1,8 +1,10 @@
 
 import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import MainPage from './pages/MainPage';
 import LoginPage from './pages/Login';
+import SettingsPage from './pages/Settings';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -25,16 +27,43 @@ function App() {
   };
 
   return (
-    <>
-      {!isLoggedIn ? (
-        <LoginPage 
-          onLogin={handleLogin}
-          isLoading={isLoading}
+    <Router>
+      <Routes>
+        <Route 
+          path="/login" 
+          element={
+            !isLoggedIn ? (
+              <LoginPage 
+                onLogin={handleLogin}
+                isLoading={isLoading}
+              />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
         />
-      ) : (
-        <MainPage onLogout={handleLogout} />
-      )}
-    </>
+        <Route 
+          path="/settings" 
+          element={
+            isLoggedIn ? (
+              <SettingsPage onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/" 
+          element={
+            isLoggedIn ? (
+              <MainPage onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          } 
+        />
+      </Routes>
+    </Router>
   );
 }
 

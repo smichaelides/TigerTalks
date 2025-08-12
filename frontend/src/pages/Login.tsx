@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import princetonLogo from '../assets/princeton.png';
 import tigerAvatar from '../assets/tiggy.png';
 
@@ -7,6 +8,13 @@ interface LoginProps {
 }
 
 function Login({ onLogin, isLoading = false }: LoginProps) {
+  const navigate = useNavigate();
+
+  const handleLogin = async () => {
+    await onLogin();
+    navigate('/');
+  };
+
   return (
     <div className="login-container">
       <div className="login-card">
@@ -21,7 +29,7 @@ function Login({ onLogin, isLoading = false }: LoginProps) {
 
         <div className="login-content">
           <button
-            onClick={onLogin}
+            onClick={handleLogin}
             className="login-button"
             disabled={isLoading}
           >

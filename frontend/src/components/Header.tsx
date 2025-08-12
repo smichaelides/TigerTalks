@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
 import princetonLogo from '../assets/princeton.png';
 
@@ -9,6 +10,7 @@ interface HeaderProps {
 function Header({ onLogout }: HeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -22,12 +24,13 @@ function Header({ onLogout }: HeaderProps) {
   }, []);
 
   const handleSettingsClick = () => {
-    console.log('Settings clicked');
+    navigate('/settings');
     setIsDropdownOpen(false);
   };
 
   const handleLogoutClick = () => {
     onLogout();
+    navigate('/login');
     setIsDropdownOpen(false);
   };
 
