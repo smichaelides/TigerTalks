@@ -914,11 +914,11 @@ body {
   }
   
   .chat-container {
-    padding: 1rem 0.5rem;
+    padding: 0.5rem;
   }
   
   .chat-container-with-messages {
-    padding: 1rem 0.5rem;
+    padding: 0.5rem;
   }
   
   .welcome-title-container {

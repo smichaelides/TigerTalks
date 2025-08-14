@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import Header from '../components/Header';
 import WelcomeScreen from '../components/WelcomeScreen';
 import ChatInterface from '../components/ChatInterface';
@@ -23,10 +23,6 @@ function MainPage({ onLogout }: MainPageProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isLoading]);
-
   const getAvatar = () => tigerAvatar;
 
   const handleSendMessage = (customText?: string) => {
@@ -43,6 +39,7 @@ function MainPage({ onLogout }: MainPageProps) {
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
     setIsLoading(true);
+    scrollToBottom();
 
     // Simulate AI response
     setTimeout(() => {
@@ -54,6 +51,7 @@ function MainPage({ onLogout }: MainPageProps) {
       };
       setMessages(prev => [...prev, aiMessage]);
       setIsLoading(false);
+      scrollToBottom();
     }, 1000);
   };
 
