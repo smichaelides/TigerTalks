@@ -282,12 +282,46 @@ body {
   height: calc(100vh - 140px);
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+/* Download Chat Button */
+.download-chat-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  background: rgba(255, 255, 255, 0.8);
+  color: #6b7280;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.download-chat-button:hover {
+  background: rgba(255, 255, 255, 0.95);
+  color: #ff8c00;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.download-chat-button svg {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 /* Messages Container */
 .messages-container {
   flex: 1;
-  padding: 1rem 1rem;
+  padding: 5rem 1rem;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -486,6 +520,27 @@ body {
 
 .send-button:hover:not(:disabled) svg {
   transform: translateY(-1px);
+}
+
+.download-button {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #d1d5db, #9ca3af);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.download-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #d1d5db, #9ca3af);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(255, 140, 0, 0.4);
 }
 
 /* Settings Page */
