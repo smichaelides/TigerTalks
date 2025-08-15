@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FiUser, FiSettings, FiLogOut, FiDownload } from 'react-icons/fi';
 import princetonLogo from '../assets/princeton.png';
 import type { Message } from '../types';
+import { generateChatPDF } from '../utils/pdfGenerator';
 
 interface HeaderProps {
   onLogout: () => void;
@@ -37,26 +38,7 @@ function Header({ onLogout, messages }: HeaderProps) {
   };
 
   const handleDownloadChat = () => {
-    if (messages.length === 0) return;
-
-    const chatContent = messages.map(message => {
-      const sender = message.isUser ? 'You' : 'Tiggy';
-      const time = message.timestamp.toLocaleTimeString([], { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      });
-      return `[${time}] ${sender}: ${message.text}`;
-    }).join('\n\n');
-
-    const blob = new Blob([chatContent], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `tiggy-chat-${new Date().toISOString().split('T')[0]}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    generateChatPDF(messages);
   };
 
   return (
