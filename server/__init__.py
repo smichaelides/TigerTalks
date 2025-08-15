@@ -1,7 +1,10 @@
+# external imports
 import os
-
 from flask import Flask
 from dotenv import load_dotenv
+
+# internal imports
+from server.api.routes import register_routes
 
 load_dotenv()
 
@@ -26,9 +29,6 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # a simple page that says hello
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
+    register_routes(app)
 
     return app
