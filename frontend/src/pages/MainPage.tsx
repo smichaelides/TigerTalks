@@ -23,6 +23,29 @@ function MainPage({ onLogout }: MainPageProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleDownloadChat = () => {
+    if (messages.length === 0) return;
+
+    const chatContent = messages.map(message => {
+      const sender = message.isUser ? 'You' : 'Tiggy';
+      const time = message.timestamp.toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+      return `[${time}] ${sender}: ${message.text}`;
+    }).join('\n\n');
+
+    const blob = new Blob([chatContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `tiggy-chat-${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const getAvatar = () => tigerAvatar;
 
   const handleSendMessage = (customText?: string) => {
@@ -64,7 +87,11 @@ function MainPage({ onLogout }: MainPageProps) {
 
   return (
     <div className="app">
-      <Header onLogout={onLogout} />
+      <Header 
+        onLogout={onLogout} 
+        onDownloadChat={handleDownloadChat}
+        hasMessages={hasMessages}
+      />
       
       <main className={`chat-container ${hasMessages ? 'chat-container-with-messages' : ''}`}>
         {!hasMessages ? (
