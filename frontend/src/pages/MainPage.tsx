@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Header from '../components/Header';
 import WelcomeScreen from '../components/WelcomeScreen';
 import ChatInterface from '../components/ChatInterface';
@@ -18,6 +18,11 @@ function MainPage({ onLogout }: MainPageProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const hasMessages = messages.length > 0;
+
+  // Auto-scroll to bottom whenever messages or loading state changes
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isLoading]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -40,7 +45,6 @@ function MainPage({ onLogout }: MainPageProps) {
     setInputValue('');
     setIsLoading(true);
     console.log('Loading state set to true');
-    scrollToBottom();
 
     // Simulate AI response
     setTimeout(() => {
@@ -53,7 +57,6 @@ function MainPage({ onLogout }: MainPageProps) {
       setMessages(prev => [...prev, aiMessage]);
       setIsLoading(false);
       console.log('Loading state set to false');
-      scrollToBottom();
     }, 2000);
   };
 
