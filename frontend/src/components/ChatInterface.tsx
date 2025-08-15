@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiArrowUp, FiDownload } from 'react-icons/fi';
+import { FiArrowUp } from 'react-icons/fi';
 import type { Message } from '../types';
 
 interface ChatInterfaceProps {
@@ -24,41 +24,8 @@ function ChatInterface({
   messagesEndRef
 }: ChatInterfaceProps) {
 
-  const handleDownloadChat = () => {
-    if (messages.length === 0) return;
-
-    const chatContent = messages.map(message => {
-      const sender = message.isUser ? 'You' : 'Tiggy';
-      const time = message.timestamp.toLocaleTimeString([], { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      });
-      return `[${time}] ${sender}: ${message.text}`;
-    }).join('\n\n');
-
-    const blob = new Blob([chatContent], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `tiggy-chat-${new Date().toISOString().split('T')[0]}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
   return (
     <div className="chat-layout">
-      {messages.length > 0 && (
-        <button 
-          className="download-chat-button"
-          onClick={handleDownloadChat}
-          title="Download Chat"
-          data-tooltip="Download Chat"
-        >
-          <FiDownload />
-        </button>
-      )}
       {/* Messages */}
       <div className="messages-container">
         {messages.map((message) => (

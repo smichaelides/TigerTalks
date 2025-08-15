@@ -39,6 +39,7 @@ function MainPage({ onLogout }: MainPageProps) {
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
     setIsLoading(true);
+    console.log('Loading state set to true');
     scrollToBottom();
 
     // Simulate AI response
@@ -51,8 +52,9 @@ function MainPage({ onLogout }: MainPageProps) {
       };
       setMessages(prev => [...prev, aiMessage]);
       setIsLoading(false);
+      console.log('Loading state set to false');
       scrollToBottom();
-    }, 1000);
+    }, 2000);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -64,7 +66,7 @@ function MainPage({ onLogout }: MainPageProps) {
 
   return (
     <div className="app">
-      <Header onLogout={onLogout} />
+      <Header onLogout={onLogout} messages={messages} />
       
       <main className={`chat-container ${hasMessages ? 'chat-container-with-messages' : ''}`}>
         {!hasMessages ? (
