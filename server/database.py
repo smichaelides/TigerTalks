@@ -10,11 +10,12 @@ CONNECTION_STRING = os.environ["MONGODB_CONNECTION_STRING"]
 DATABASE_NAME = os.environ["DATABASE_NAME"]
 
 
-def get_database():
+def get_database_client():
     client: MongoClient[dict[str, object]] = MongoClient(CONNECTION_STRING)
 
     try:
-        logging.info("Creating database client for %s", DATABASE_NAME)
+        client.admin.command("ping")
+        logging.info("Connected to MongoDB; using database %s", DATABASE_NAME)
         database = client[DATABASE_NAME]
     except Exception as ex:
         logging.error("An error occurred while creating the database client: %s", ex)

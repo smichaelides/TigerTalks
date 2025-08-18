@@ -1,36 +1,29 @@
-# external imports
 import os
-from typing import Any, Mapping
 
 from dotenv import load_dotenv
 from flask import Flask
-
-# internal imports
 from server.api.routes import register_routes
+
+from server.database import get_database_client
 
 load_dotenv()
 
 
-def create_app(test_config: Mapping[str, Any] | None = None):
+def create_app():
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        SECRET_KEY=os.getenv("SECRET_KEY"),
-        DATABASE=os.path.join(app.instance_path, "flaskr.sqlite"),
+        SECRET_KEY=os.getenv("SECRET_KEY", "dev"),
+        MONGODB_CONNECTION_STRING=os.getenv("MONGODB_CONNECTION_STRING"),
+        DATABASE_NAME=os.getenv("DATABASE_NAME"),
     )
 
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile("config.py", silent=True)
-    else:
-        # load the test config if passed in
-        app.config.from_mapping(test_config)
-
-    # ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
+    # Create and attach one DB handle for the whole process
+    setattr(
+        app,
+        "mongo_db",
+        get_database_client(),
+    )
 
     register_routes(app)
 
