@@ -1,14 +1,11 @@
-# internal imports
 from datetime import datetime
+from bson import ObjectId
+from server.api.model._base import Model
 
-# external imports
-from pydantic import BaseModel
 
-
-class Message(BaseModel):
+class Message(Model):
+    _id: ObjectId
     message: str
-    message_id: str
-    conversation_id: str
     timestamp: datetime
 
 
