@@ -1,0 +1,26 @@
+import logging
+from flask import Blueprint, request
+from server.api.model.user import User
+from server.database import get_database
+
+user = Blueprint("user", __name__, url_prefix="/user")
+
+
+@user.route("/create-user", methods=["POST"])
+def create_user():
+    logging.info("/create-user called")
+    db = get_database()
+    payload = request.get_json()
+
+    assert "name" in payload
+    assert "grad_year" in payload
+
+    new_user = User(name=payload.get("name"), grad_year=payload.get("grad_year"))
+
+    try:
+        db.users.insert_one(new_user.model_dump())
+    except Exception as ex:
+        logging.error("Failed to create user: %s", ex)
+        raise
+
+    return new_user.model_dump_json(), 201
