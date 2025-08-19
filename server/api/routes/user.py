@@ -20,7 +20,7 @@ def create_user():
     try:
         db.users.insert_one(new_user.model_dump())
     except Exception as ex:
-        logging.error("Failed to create user: %s", ex)
-        raise
+        logging.error("Failed to create new user: %s", ex)
+        return {"error": f"Failed to create new user: {ex}"}, 500
 
     return new_user.model_dump_json(), 201

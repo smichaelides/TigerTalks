@@ -23,8 +23,8 @@ def create_chat():
     try:
         db.chats.insert_one(new_chat.model_dump())
     except Exception as ex:
-        logging.error("Failed to create a chat: %s", ex)
-        raise
+        logging.error("Failed to create a new chat: %s", ex)
+        return {"error": f"Failed to create a new chat {ex}"}, 500
 
     return new_chat.model_dump_json(), 201
 
@@ -51,7 +51,7 @@ def send_message():
         )
     except Exception as ex:
         logging.error("Failed to upload user message to the database: %s", ex)
-        raise
+        return {"error": f"Failed to upload user message to the database: {ex}"}, 500
 
     model_msg = ModelMessage.model_validate(payload)
     model_msg.message = (
@@ -64,6 +64,6 @@ def send_message():
         )
     except Exception as ex:
         logging.error("Failed to upload model message to the database: %s", ex)
-        raise
+        return {"error": f"Failed to upload model message to the database: {ex}"}, 500
 
     return {"model_message": model_msg.message}, 201
