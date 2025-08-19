@@ -34,6 +34,10 @@ def send_message():
     db = get_database()
     payload = request.get_json()
 
+    assert "chat_id" in payload
+    assert "user_id" in payload
+    assert "timestamp" in payload
+
     payload["chat_id"] = ObjectId(payload["chat_id"])
     payload["user_id"] = ObjectId(payload["user_id"])
     payload["timestamp"] = datetime.now(tz=timezone.utc)
@@ -46,7 +50,6 @@ def send_message():
             {"$push": {"user_messages": user_msg.model_dump()}},
         )
     except Exception as ex:
-        print(ex)
         logging.error("Failed to upload user message to the database: %s", ex)
         raise
 
