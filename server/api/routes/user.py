@@ -13,9 +13,16 @@ def create_user():
     payload = request.get_json()
 
     assert "name" in payload
+    assert "email" in payload
     assert "grad_year" in payload
 
-    new_user = User(name=payload.get("name"), grad_year=payload.get("grad_year"))
+    new_user = User(
+        name=payload.get("name"),
+        email=payload.get("email"),
+        grad_year=payload.get("grad_year"),
+        concentration=payload.get("concentration"),
+        certificates=payload.get("certificates", [])
+    )
 
     try:
         db.users.insert_one(new_user.model_dump())
