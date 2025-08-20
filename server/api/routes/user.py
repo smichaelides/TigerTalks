@@ -1,7 +1,7 @@
 import logging
 from bson import ObjectId
 from flask import Blueprint, request
-from server.api.model.user import User
+from server.api.models.user import User
 from server.database import get_database
 
 user = Blueprint("user", __name__, url_prefix="/user")

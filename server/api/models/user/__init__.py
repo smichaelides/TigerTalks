@@ -1,4 +1,4 @@
-from server.api.model._base import Model
+from server.api.models._base import Model
 
 
 class User(Model):

@@ -3,8 +3,8 @@ from datetime import datetime, timezone
 from bson import ObjectId
 from flask import Blueprint, request
 from server.database import get_database
-from server.api.model.chat import Chat
-from server.api.model.message import UserMessage, ModelMessage
+from server.api.models.chat import Chat
+from server.api.models.message import UserMessage, ModelMessage
 
 chat = Blueprint("chat", __name__, url_prefix="/chat")
 

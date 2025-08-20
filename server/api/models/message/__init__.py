@@ -1,6 +1,6 @@
 from datetime import datetime
 from bson import ObjectId
-from server.api.model._base import Model
+from server.api.models._base import Model
 
 
 class Message(Model):
