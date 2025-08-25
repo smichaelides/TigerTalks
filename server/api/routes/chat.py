@@ -9,12 +9,79 @@ from server.api.models.message import UserMessage, ModelMessage
 chat = Blueprint("chat", __name__, url_prefix="/chat")
 
 
+@chat.route("/get-chat", methods=["GET"])
+def get_chat():
+    db = get_database()
+    chat_id = request.args.get("chat_id")
+    user_id = request.args.get("user_id")
+
+    if not chat_id or not user_id:
+        return {"error": "Missing required fields: 'chat_id' and 'user_id'."}, 400
+
+    try:
+        chat_dict = db.chats.find_one(
+            {
+                "_id": ObjectId(chat_id),
+                "user_id": ObjectId(user_id),
+            }
+        )
+        if not chat_dict:
+            return {"error": "Chat not found."}, 404
+
+        # Convert ObjectId fields to strings for JSON serialization
+        chat_dict["_id"] = str(chat_dict["_id"])
+        chat_dict["user_id"] = str(chat_dict["user_id"])
+
+        for key in ["user_messages", "model_messages"]:
+            for msg in chat_dict[key]:
+                msg["user_id"] = str(msg["user_id"])
+                msg["chat_id"] = str(msg["chat_id"])
+    except Exception as ex:
+        logging.exception("Error retrieving chat data: %s", ex)
+        return {"error": "Error retrieving chat data."}, 500
+
+    return {"chat": chat_dict}, 200
+
+
+@chat.route("/list-chats", methods=["GET"])
+def list_chats():
+    db = get_database()
+    user_id = request.args.get("user_id")
+
+    if user_id is None:
+        return {"error": "Missing required field: 'user_id'."}, 400
+
+    try:
+        chats = list(db.chats.find({"user_id": ObjectId(user_id)}, {"_id": 1}))
+        # only lists out the _id, we can call /get-chat to get the messages
+        for chat_dict in chats:
+            chat_dict["_id"] = str(chat_dict["_id"])
+    except Exception as ex:
+        logging.exception("Error retrieving chats: %s", ex)
+        return {"error": "Error retrieving chats."}, 500
+
+    return {"chats": chats}, 200
+
+
 @chat.route("/create-chat", methods=["POST"])
 def create_chat():
     db = get_database()
     payload = request.get_json()
 
-    assert "user_id" in payload
+    if "user_id" not in payload:
+        return {"error": "Missing required field: 'user_id'."}, 400
+
+    # Verify that user_id exists in the users collection
+    try:
+        user_exists = db.users.find_one({"_id": ObjectId(payload.get("user_id"))})
+        if not user_exists:
+            logging.error(
+                "User with user_id %s does not exist.", payload.get("user_id")
+            )
+            return {"error": "Invalid user_id. User does not exist."}, 400
+    except Exception as ex:
+        logging.error("Failed to verify user existence: %s", ex)
+        return {"error": f"Failed to verify user existence: {ex}"}, 500
 
     new_chat = Chat(
         user_id=ObjectId(payload.get("user_id")), user_messages=[], model_messages=[]
@@ -34,9 +101,13 @@ def send_message():
     db = get_database()
     payload = request.get_json()
 
-    assert "chat_id" in payload
-    assert "user_id" in payload
-    assert "timestamp" in payload
+    if (
+        not payload
+        or "chat_id" not in payload
+        or "user_id" not in payload
+        or "timestamp" not in payload
+    ):
+        return {"error": "Missing required fields."}, 400
 
     payload["chat_id"] = ObjectId(payload["chat_id"])
     payload["user_id"] = ObjectId(payload["user_id"])
@@ -45,10 +116,15 @@ def send_message():
     user_msg = UserMessage.model_validate(payload)
 
     try:
-        db.chats.update_one(
-            {"_id": user_msg.chat_id},
+        result = db.chats.update_one(
+            {"_id": user_msg.chat_id, "user_id": user_msg.user_id},
             {"$push": {"user_messages": user_msg.model_dump()}},
         )
+        if result.matched_count == 0:
+            logging.error(
+                "No chat found matching chat_id and user_id: %s", user_msg.chat_id
+            )
+            return {"error": "No chat found matching chat_id and user_id."}, 404
     except Exception as ex:
         logging.error("Failed to upload user message to the database: %s", ex)
         return {"error": f"Failed to upload user message to the database: {ex}"}, 500
@@ -59,7 +135,7 @@ def send_message():
     )
     try:
         db.chats.update_one(
-            {"_id": model_msg.chat_id},
+            {"_id": model_msg.chat_id, "user_id": user_msg.user_id},
             {"$push": {"model_messages": model_msg.model_dump()}},
         )
     except Exception as ex:

@@ -10,11 +10,7 @@ user = Blueprint("user", __name__, url_prefix="/user")
 @user.route("/get-user", methods=["GET"])
 def get_user():
     db = get_database()
-    payload = request.get_json()
-
-    assert "user_id" in payload
-
-    user_id = payload.get("user_id")
+    user_id = request.args.get("user_id")
 
     try:
         db_user = db.users.find_one({"_id": ObjectId(user_id)})
