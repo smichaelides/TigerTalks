@@ -1,10 +1,11 @@
 import logging
+from typing import Any
 from datetime import datetime, timezone
 from bson import ObjectId
 from flask import Blueprint, request
 from server.database import get_database
 from server.api.models.chat import Chat
-from server.api.models.message import UserMessage, ModelMessage
+from server.api.models.message import Message, UserMessage, ModelMessage
 
 chat = Blueprint("chat", __name__, url_prefix="/chat")
 
@@ -19,11 +20,13 @@ def get_chat():
         return {"error": "Missing required fields: 'chat_id' and 'user_id'."}, 400
 
     try:
-        chat_dict = db.chats.find_one(
-            {
-                "_id": ObjectId(chat_id),
-                "user_id": ObjectId(user_id),
-            }
+        chat_dict: dict[str, str | list[dict[str, str]]] | None | Any = (
+            db.chats.find_one(
+                {
+                    "_id": ObjectId(chat_id),
+                    "user_id": ObjectId(user_id),
+                }
+            )
         )
         if not chat_dict:
             return {"error": "Chat not found."}, 404
@@ -33,9 +36,12 @@ def get_chat():
         chat_dict["user_id"] = str(chat_dict["user_id"])
 
         for key in ["user_messages", "model_messages"]:
-            for msg in chat_dict[key]:
-                msg["user_id"] = str(msg["user_id"])
-                msg["chat_id"] = str(msg["chat_id"])
+            if isinstance(chat_dict[key], list):
+                for msg in chat_dict[key]:
+                    if isinstance(msg, dict) and isinstance(msg["user_id"], ObjectId):
+                        msg["user_id"] = str(msg["user_id"])
+                    if isinstance(msg, dict) and isinstance(msg["chat_id"], ObjectId):
+                        msg["chat_id"] = str(msg["chat_id"])
     except Exception as ex:
         logging.exception("Error retrieving chat data: %s", ex)
         return {"error": "Error retrieving chat data."}, 500
