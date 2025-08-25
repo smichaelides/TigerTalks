@@ -27,9 +27,12 @@ def create_user():
     db = get_database()
     payload = request.get_json()
 
-    assert "name" in payload
-    assert "email" in payload
-    assert "grad_year" in payload
+    if "name" not in payload:
+        return {"error": "Missing required field: name"}, 400
+    if "email" not in payload:
+        return {"error": "Missing required field: email"}, 400
+    if "grad_year" not in payload:
+        return {"error": "Missing required field: grad_year"}, 400
 
     new_user = User(
         name=payload.get("name"),
@@ -53,8 +56,10 @@ def update_concentration():
     db = get_database()
     payload = request.get_json()
 
-    assert "user_id" in payload
-    assert "concentration" in payload
+    if "user_id" not in payload:
+        return {"error": "Missing required field: user_id"}, 400
+    if "concentration" not in payload:
+        return {"error": "Missing required field: concentration"}, 400
 
     user_id: str = payload.get("user_id")
     concentration: str = payload.get("concentration")
@@ -80,8 +85,10 @@ def update_certificates():
     db = get_database()
     payload = request.get_json()
 
-    assert "user_id" in payload
-    assert "certificates" in payload
+    if "user_id" not in payload:
+        return {"error": "Missing required field: user_id"}, 400
+    if "certificates" not in payload:
+        return {"error": "Missing required field: certificates"}, 400
 
     user_id: str = payload.get("user_id")
     certificates: list[str] = payload.get("certificates")
