@@ -16,7 +16,10 @@ def get_chat():
     chat_id = request.args.get("chat_id")
     user_id = request.args.get("user_id")
 
-    if not chat_id or not user_id:
+    if chat_id is None:
+        return {"error": "Missing required fields: 'chat_id' and 'user_id'."}, 400
+
+    if user_id is None:
         return {"error": "Missing required fields: 'chat_id' and 'user_id'."}, 400
 
     try:
@@ -107,13 +110,17 @@ def send_message():
     db = get_database()
     payload = request.get_json()
 
-    if (
-        not payload
-        or "chat_id" not in payload
-        or "user_id" not in payload
-        or "timestamp" not in payload
-    ):
-        return {"error": "Missing required fields."}, 400
+    if not payload:
+        return {"error": "Payload is missing."}, 400
+
+    if "chat_id" not in payload:
+        return {"error": "Missing required field: 'chat_id'."}, 400
+
+    if "user_id" not in payload:
+        return {"error": "Missing required field: 'user_id'."}, 400
+
+    if "timestamp" not in payload:
+        return {"error": "Missing required field: 'timestamp'."}, 400
 
     payload["chat_id"] = ObjectId(payload["chat_id"])
     payload["user_id"] = ObjectId(payload["user_id"])
