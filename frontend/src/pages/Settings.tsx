@@ -38,7 +38,7 @@ function Settings({ onLogout }: SettingsProps) {
 
     return (
         <div className="app">
-            <Header onLogout={onLogout} />
+            <Header onLogout={onLogout} messages={[]} />
             <div className="settings-container">
                 <div className="settings-card">
                     <div className="settings-header">
