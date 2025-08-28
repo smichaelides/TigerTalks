@@ -1,9 +1,8 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import princetonLogo from '../assets/princeton.png';
-import tigerAvatar from '../assets/tiggy.png';
-import { userAPI } from '../utils/api';
-
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import princetonLogo from "../assets/princeton.png";
+import tigerAvatar from "../assets/tiggy.png";
+import { userAPI } from "../utils/api";
 
 interface LoginProps {
   onLogin: (userId: string) => void;
@@ -20,22 +19,16 @@ function Login({ onLogin, isLoading = false }: LoginProps) {
     setError(null);
 
     try {
-      const user = await userAPI.createUser({
-        email: 'test@test.com',
-        name: 'Test User',
-        grad_year: new Date().getFullYear(),
-        concentration: 'Test Concentration',
-        certificates: [],
-      });
-      console.log('User created:', user);
-      
+      const user = await userAPI.getUser("68b0a1d3b4170a1e1947edc3");
+      console.log("Retrieved user:", user);
+
       // Store user ID and call onLogin with the user ID
-      localStorage.setItem('userId', user._id);
+      localStorage.setItem("userId", user._id);
       onLogin(user._id);
-      navigate('/');
+      navigate("/");
     } catch (error) {
-      console.error('Failed to create user:', error);
-      setError('Failed to create user. Please try again.');
+      console.error("Failed to create user:", error);
+      setError("Failed to create user. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -55,13 +48,13 @@ function Login({ onLogin, isLoading = false }: LoginProps) {
 
         <div className="login-content">
           {error && <div className="error-message">{error}</div>}
-          
+
           <button
             onClick={handleLogin}
             className="login-button"
             disabled={isSubmitting || isLoading}
           >
-            {isSubmitting ? 'Creating account...' : 'Get Started'}
+            {isSubmitting ? "Creating account..." : "Get Started"}
           </button>
         </div>
       </div>
@@ -69,4 +62,4 @@ function Login({ onLogin, isLoading = false }: LoginProps) {
   );
 }
 
-export default Login; 
+export default Login;

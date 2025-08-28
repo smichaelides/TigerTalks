@@ -31,8 +31,6 @@ def create_user():
         return {"error": "Missing required field: name"}, 400
     if "email" not in payload:
         return {"error": "Missing required field: email"}, 400
-    if "grad_year" not in payload:
-        return {"error": "Missing required field: grad_year"}, 400
 
     new_user = User(
         name=payload.get("name"),
