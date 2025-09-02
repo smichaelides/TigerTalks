@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
-import Header from '../components/Header';
-import WelcomeScreen from '../components/WelcomeScreen';
-import ChatInterface from '../components/ChatInterface';
-import type { Message } from '../types';
+import React, { useState, useRef, useEffect } from "react";
+import Header from "../components/Header";
+import WelcomeScreen from "../components/WelcomeScreen";
+import ChatInterface from "../components/ChatInterface";
+import type { Message } from "../types";
 
 // Import avatar images
-import tigerAvatar from '../assets/tiggy.png';
+import tigerAvatar from "../assets/tiggy.png";
 
 interface MainPageProps {
   onLogout: () => void;
@@ -13,7 +13,8 @@ interface MainPageProps {
 
 function MainPage({ onLogout }: MainPageProps) {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [inputValue, setInputValue] = useState('');
+  const [chatId, setChatId] = useState("");
+  const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -25,7 +26,7 @@ function MainPage({ onLogout }: MainPageProps) {
   }, [messages, isLoading]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const getAvatar = () => tigerAvatar;
@@ -41,27 +42,27 @@ function MainPage({ onLogout }: MainPageProps) {
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setInputValue('');
+    setMessages((prev) => [...prev, userMessage]);
+    setInputValue("");
     setIsLoading(true);
-    console.log('Loading state set to true');
+    console.log("Loading state set to true");
 
     // Simulate AI response
     setTimeout(() => {
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: 'This is a simulated response. The backend integration will be added later!',
+        text: "This is a simulated response. The backend integration will be added later!",
         isUser: false,
         timestamp: new Date(),
       };
-      setMessages(prev => [...prev, aiMessage]);
+      setMessages((prev) => [...prev, aiMessage]);
       setIsLoading(false);
-      console.log('Loading state set to false');
+      console.log("Loading state set to false");
     }, 2000);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
@@ -70,10 +71,14 @@ function MainPage({ onLogout }: MainPageProps) {
   return (
     <div className="app">
       <Header onLogout={onLogout} messages={messages} />
-      
-      <main className={`chat-container ${hasMessages ? 'chat-container-with-messages' : ''}`}>
+
+      <main
+        className={`chat-container ${
+          hasMessages ? "chat-container-with-messages" : ""
+        }`}
+      >
         {!hasMessages ? (
-          <WelcomeScreen 
+          <WelcomeScreen
             inputValue={inputValue}
             setInputValue={setInputValue}
             handleSendMessage={handleSendMessage}
@@ -81,7 +86,7 @@ function MainPage({ onLogout }: MainPageProps) {
             isLoading={isLoading}
           />
         ) : (
-          <ChatInterface 
+          <ChatInterface
             messages={messages}
             inputValue={inputValue}
             setInputValue={setInputValue}
@@ -97,4 +102,4 @@ function MainPage({ onLogout }: MainPageProps) {
   );
 }
 
-export default MainPage; 
+export default MainPage;
