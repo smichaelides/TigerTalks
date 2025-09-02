@@ -5,7 +5,7 @@ from bson import ObjectId
 from flask import Blueprint, request
 from server.database import get_database
 from server.api.models.chat import Chat
-from server.api.models.message import Message, UserMessage, ModelMessage
+from server.api.models.message import UserMessage, ModelMessage
 
 chat = Blueprint("chat", __name__, url_prefix="/chat")
 
@@ -97,11 +97,12 @@ def create_chat():
     )
 
     try:
-        db.chats.insert_one(new_chat.model_dump())
+        chat_id = db.chats.insert_one(new_chat.model_dump()).inserted_id
     except Exception as ex:
         logging.error("Failed to create a new chat: %s", ex)
         return {"error": f"Failed to create a new chat {ex}"}, 500
 
+    new_chat.chat_id = str(chat_id)
     return new_chat.model_dump_json(), 201
 
 

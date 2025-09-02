@@ -7,3 +7,4 @@ class Chat(Model):
     user_messages: list[UserMessage]
     model_messages: list[ModelMessage]
     user_id: ObjectId
+    chat_id: str | None = None
