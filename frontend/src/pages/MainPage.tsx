@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import Header from "../components/Header";
 import WelcomeScreen from "../components/WelcomeScreen";
 import ChatInterface from "../components/ChatInterface";
-import type { Message } from "../types";
+import ChatSidebar from "../components/ChatSidebar";
+import type { Message, Chat } from "../types";
 
 // Import avatar images
 import tigerAvatar from "../assets/tiggy.png";
@@ -12,12 +13,22 @@ interface MainPageProps {
 }
 
 function MainPage({ onLogout }: MainPageProps) {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [chatId, setChatId] = useState("");
+  const [chats, setChats] = useState<Chat[]>([
+    {
+      id: "default",
+      title: "New Chat",
+      messages: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+  ]);
+  const [currentChatId, setCurrentChatId] = useState("default");
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const currentChat = chats.find(chat => chat.id === currentChatId);
+  const messages = currentChat?.messages || [];
   const hasMessages = messages.length > 0;
 
   // Auto-scroll to bottom whenever messages or loading state changes
@@ -31,6 +42,55 @@ function MainPage({ onLogout }: MainPageProps) {
 
   const getAvatar = () => tigerAvatar;
 
+  const createNewChat = () => {
+    const newChatId = `chat_${Date.now()}`;
+    const newChat: Chat = {
+      id: newChatId,
+      title: "New Chat",
+      messages: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
+    setChats(prev => [...prev, newChat]);
+    setCurrentChatId(newChatId);
+    setInputValue("");
+  };
+
+  const selectChat = (chatId: string) => {
+    setCurrentChatId(chatId);
+    setInputValue("");
+  };
+
+  const deleteChat = (chatId: string) => {
+    if (chats.length <= 1) return;
+    
+    setChats(prev => prev.filter(chat => chat.id !== chatId));
+    
+    // If we're deleting the current chat, switch to new chat 
+    if (chatId === currentChatId) {
+      const remainingChats = chats.filter(chat => chat.id !== chatId);
+      if (remainingChats.length > 0) {
+        setCurrentChatId(remainingChats[0].id);
+      }
+    }
+  };
+
+  const updateChatMessages = (chatId: string, newMessages: Message[]) => {
+    setChats(prev => prev.map(chat => 
+      chat.id === chatId 
+        ? { 
+            ...chat, 
+            messages: newMessages, 
+            updatedAt: new Date(),
+            title: chat.title === "New Chat" && newMessages.length > 0 
+              ? newMessages[0].text.substring(0, 30) + (newMessages[0].text.length > 30 ? '...' : '')
+              : chat.title
+          }
+        : chat
+    ));
+  };
+
   const handleSendMessage = (customText?: string) => {
     const textToSend = customText || inputValue;
     if (!textToSend.trim()) return;
@@ -42,7 +102,8 @@ function MainPage({ onLogout }: MainPageProps) {
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    const newMessages = [...messages, userMessage];
+    updateChatMessages(currentChatId, newMessages);
     setInputValue("");
     setIsLoading(true);
     console.log("Loading state set to true");
@@ -55,7 +116,8 @@ function MainPage({ onLogout }: MainPageProps) {
         isUser: false,
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, aiMessage]);
+      const finalMessages = [...newMessages, aiMessage];
+      updateChatMessages(currentChatId, finalMessages);
       setIsLoading(false);
       console.log("Loading state set to false");
     }, 2000);
@@ -72,32 +134,42 @@ function MainPage({ onLogout }: MainPageProps) {
     <div className="app">
       <Header onLogout={onLogout} messages={messages} />
 
-      <main
-        className={`chat-container ${
-          hasMessages ? "chat-container-with-messages" : ""
-        }`}
-      >
-        {!hasMessages ? (
-          <WelcomeScreen
-            inputValue={inputValue}
-            setInputValue={setInputValue}
-            handleSendMessage={handleSendMessage}
-            handleKeyDown={handleKeyDown}
-            isLoading={isLoading}
-          />
-        ) : (
-          <ChatInterface
-            messages={messages}
-            inputValue={inputValue}
-            setInputValue={setInputValue}
-            handleSendMessage={handleSendMessage}
-            handleKeyDown={handleKeyDown}
-            isLoading={isLoading}
-            getAvatar={getAvatar}
-            messagesEndRef={messagesEndRef}
-          />
-        )}
-      </main>
+      <div className="main-content">
+        <ChatSidebar
+          chats={chats}
+          currentChatId={currentChatId}
+          onChatSelect={selectChat}
+          onNewChat={createNewChat}
+          onDeleteChat={deleteChat}
+        />
+
+        <main
+          className={`chat-container ${
+            hasMessages ? "chat-container-with-messages" : ""
+          }`}
+        >
+          {!hasMessages ? (
+            <WelcomeScreen
+              inputValue={inputValue}
+              setInputValue={setInputValue}
+              handleSendMessage={handleSendMessage}
+              handleKeyDown={handleKeyDown}
+              isLoading={isLoading}
+            />
+          ) : (
+            <ChatInterface
+              messages={messages}
+              inputValue={inputValue}
+              setInputValue={setInputValue}
+              handleSendMessage={handleSendMessage}
+              handleKeyDown={handleKeyDown}
+              isLoading={isLoading}
+              getAvatar={getAvatar}
+              messagesEndRef={messagesEndRef}
+            />
+          )}
+        </main>
+      </div>
     </div>
   );
 }

@@ -5,6 +5,21 @@ export interface Message {
   timestamp: Date;
 }
 
+export interface Chat {
+  id: string;
+  title: string;
+  messages: Message[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ChatMessage {
+  id: string;
+  text: string;
+  isUser: boolean;
+  timestamp: Date;
+}
+
 export interface User {
   _id: string;
   name: string;
