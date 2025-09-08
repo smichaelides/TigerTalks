@@ -23,8 +23,8 @@ function Login({ onLogin, isLoading = false }: LoginProps) {
       console.log("Retrieved user:", user);
 
       // Store user ID and call onLogin with the user ID
-      localStorage.setItem("userId", user._id);
-      onLogin(user._id);
+      localStorage.setItem("userId", user.id);
+      onLogin(user.id);
       navigate("/");
     } catch (error) {
       console.error("Failed to create user:", error);

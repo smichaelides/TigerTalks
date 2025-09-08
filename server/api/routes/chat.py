@@ -92,8 +92,13 @@ def create_chat():
         logging.error("Failed to verify user existence: %s", ex)
         return {"error": f"Failed to verify user existence: {ex}"}, 500
 
+    now = datetime.now(tz=timezone.utc)
     new_chat = Chat(
-        user_id=ObjectId(payload.get("user_id")), user_messages=[], model_messages=[]
+        user_id=payload.get("user_id"),
+        user_messages=[],
+        model_messages=[],
+        created_at=now,
+        updated_at=now,
     )
 
     try:

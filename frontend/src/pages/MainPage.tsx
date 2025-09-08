@@ -4,6 +4,8 @@ import WelcomeScreen from "../components/WelcomeScreen";
 import ChatInterface from "../components/ChatInterface";
 import ChatSidebar from "../components/ChatSidebar";
 import type { Message, Chat } from "../types";
+import { chatAPI } from "../utils/api";
+import { useNavigate } from "react-router-dom";
 
 // Import avatar images
 import tigerAvatar from "../assets/tiggy.png";
@@ -20,14 +22,15 @@ function MainPage({ onLogout }: MainPageProps) {
       messages: [],
       createdAt: new Date(),
       updatedAt: new Date(),
-    }
+    },
   ]);
+  const navigate = useNavigate();
   const [currentChatId, setCurrentChatId] = useState("default");
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const currentChat = chats.find(chat => chat.id === currentChatId);
+  const currentChat = chats.find((chat) => chat.id === currentChatId);
   const messages = currentChat?.messages || [];
   const hasMessages = messages.length > 0;
 
@@ -42,19 +45,32 @@ function MainPage({ onLogout }: MainPageProps) {
 
   const getAvatar = () => tigerAvatar;
 
-  const createNewChat = () => {
-    const newChatId = `chat_${Date.now()}`;
-    const newChat: Chat = {
-      id: newChatId,
-      title: "New Chat",
-      messages: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    
-    setChats(prev => [...prev, newChat]);
-    setCurrentChatId(newChatId);
-    setInputValue("");
+  const createNewChat = async () => {
+    const userId = localStorage.getItem("userId");
+
+    try {
+      if (!userId) {
+        console.error("User ID is null. Redirecting to login.");
+        navigate("/login");
+        return;
+      }
+
+      const chat = await chatAPI.createChat(userId);
+
+      const newChat: Chat = {
+        id: chat.chat_id,
+        title: "New Chat",
+        messages: [],
+        createdAt: new Date(chat.created_at),
+        updatedAt: new Date(chat.updated_at),
+      };
+
+      setChats((prev) => [...prev, newChat]);
+      setCurrentChatId(chat.chat_id);
+      setInputValue("");
+    } catch (error) {
+      console.error("Unable to create new chat:", error);
+    }
   };
 
   const selectChat = (chatId: string) => {
@@ -64,12 +80,12 @@ function MainPage({ onLogout }: MainPageProps) {
 
   const deleteChat = (chatId: string) => {
     if (chats.length <= 1) return;
-    
-    setChats(prev => prev.filter(chat => chat.id !== chatId));
-    
-    // If we're deleting the current chat, switch to new chat 
+
+    setChats((prev) => prev.filter((chat) => chat.id !== chatId));
+
+    // If we're deleting the current chat, switch to new chat
     if (chatId === currentChatId) {
-      const remainingChats = chats.filter(chat => chat.id !== chatId);
+      const remainingChats = chats.filter((chat) => chat.id !== chatId);
       if (remainingChats.length > 0) {
         setCurrentChatId(remainingChats[0].id);
       }
@@ -77,18 +93,22 @@ function MainPage({ onLogout }: MainPageProps) {
   };
 
   const updateChatMessages = (chatId: string, newMessages: Message[]) => {
-    setChats(prev => prev.map(chat => 
-      chat.id === chatId 
-        ? { 
-            ...chat, 
-            messages: newMessages, 
-            updatedAt: new Date(),
-            title: chat.title === "New Chat" && newMessages.length > 0 
-              ? newMessages[0].text.substring(0, 30) + (newMessages[0].text.length > 30 ? '...' : '')
-              : chat.title
-          }
-        : chat
-    ));
+    setChats((prev) =>
+      prev.map((chat) =>
+        chat.id === chatId
+          ? {
+              ...chat,
+              messages: newMessages,
+              updatedAt: new Date(),
+              title:
+                chat.title === "New Chat" && newMessages.length > 0
+                  ? newMessages[0].text.substring(0, 30) +
+                    (newMessages[0].text.length > 30 ? "..." : "")
+                  : chat.title,
+            }
+          : chat
+      )
+    );
   };
 
   const handleSendMessage = (customText?: string) => {

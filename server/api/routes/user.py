@@ -14,7 +14,12 @@ def get_user():
 
     try:
         db_user = db.users.find_one({"_id": ObjectId(user_id)})
+        if db_user:
+            db_user["id"] = user_id
+        if not db_user:
+            return {"error": f"User with id {user_id} not found"}, 404
         fetched_user = User.model_validate(db_user)
+        fetched_user.id = str(db_user["_id"])
     except Exception as ex:
         logging.error("Failed to get user %s: %s", user_id, ex)
         return {"error": f"Failed to get user {user_id}"}, 500
@@ -33,6 +38,7 @@ def create_user():
         return {"error": "Missing required field: email"}, 400
 
     new_user = User(
+        id=None,
         name=payload.get("name"),
         email=payload.get("email"),
         grad_year=payload.get("grad_year"),

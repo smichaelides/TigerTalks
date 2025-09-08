@@ -21,7 +21,7 @@ export interface ChatMessage {
 }
 
 export interface User {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   grad_year: number;
