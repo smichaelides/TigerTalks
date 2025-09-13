@@ -45,16 +45,21 @@ function MainPage({ onLogout }: MainPageProps) {
 
   const getAvatar = () => tigerAvatar;
 
-  const createNewChat = async () => {
+  const getUser = () => {
     const userId = localStorage.getItem("userId");
 
-    try {
-      if (!userId) {
-        console.error("User ID is null. Redirecting to login.");
-        navigate("/login");
-        return;
-      }
+    if (!userId) {
+      navigate("/login");
+      return "";
+    }
 
+    return userId;
+  }
+
+  const createNewChat = async () => {
+    const userId = getUser();
+
+    try {
       const chat = await chatAPI.createChat(userId);
 
       const newChat: Chat = {
@@ -78,8 +83,18 @@ function MainPage({ onLogout }: MainPageProps) {
     setInputValue("");
   };
 
-  const deleteChat = (chatId: string) => {
+  const deleteChat = async (chatId: string) => {
     if (chats.length <= 1) return;
+
+    const userId = getUser();
+
+    try {
+      await chatAPI.deleteChat(userId, chatId);
+    } catch (error) {
+      console.error("Unable to delete chat. Ex:", chatId, error);
+    }
+    
+
 
     setChats((prev) => prev.filter((chat) => chat.id !== chatId));
 

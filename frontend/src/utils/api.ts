@@ -85,4 +85,14 @@ export const chatAPI = {
       }),
     });
   },
+
+  deleteChat: async (userId: string, chatId: string): Promise<{ chat_id: string }> => {
+    return apiRequest<{ model_message: string }>('/chat/delete-chat', {
+      method: 'DELETE',
+      body: JSON.stringify({
+        chat_id: chatId,
+        user_id: userId,
+      }),
+    }); 
+  }
 };
