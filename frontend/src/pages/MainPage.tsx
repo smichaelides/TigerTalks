@@ -58,7 +58,7 @@ function MainPage({ onLogout }: MainPageProps) {
       const chat = await chatAPI.createChat(userId);
 
       const newChat: Chat = {
-        id: chat.chat_id,
+        id: chat.id,
         title: "New Chat",
         messages: [],
         createdAt: new Date(chat.created_at),
@@ -66,7 +66,7 @@ function MainPage({ onLogout }: MainPageProps) {
       };
 
       setChats((prev) => [...prev, newChat]);
-      setCurrentChatId(chat.chat_id);
+      setCurrentChatId(chat.id);
       setInputValue("");
     } catch (error) {
       console.error("Unable to create new chat:", error);
@@ -111,7 +111,14 @@ function MainPage({ onLogout }: MainPageProps) {
     );
   };
 
-  const handleSendMessage = (customText?: string) => {
+  const handleSendMessage = async (customText?: string) => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      console.error("User ID is null. Redirecting to login.");
+      navigate("/login");
+      return;
+    }
+
     const textToSend = customText || inputValue;
     if (!textToSend.trim()) return;
 
@@ -121,6 +128,12 @@ function MainPage({ onLogout }: MainPageProps) {
       isUser: true,
       timestamp: new Date(),
     };
+
+    const chatResponse = await chatAPI.sendMessage(
+      currentChatId,
+      userId,
+      textToSend
+    );
 
     const newMessages = [...messages, userMessage];
     updateChatMessages(currentChatId, newMessages);
@@ -132,7 +145,7 @@ function MainPage({ onLogout }: MainPageProps) {
     setTimeout(() => {
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "This is a simulated response. The backend integration will be added later!",
+        text: chatResponse.model_message,
         isUser: false,
         timestamp: new Date(),
       };

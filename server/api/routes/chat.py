@@ -107,9 +107,46 @@ def create_chat():
         logging.error("Failed to create a new chat: %s", ex)
         return {"error": f"Failed to create a new chat {ex}"}, 500
 
-    new_chat.chat_id = str(chat_id)
-    return new_chat.model_dump_json(), 201
+    response_data = new_chat.model_dump()
+    response_data["id"] = str(chat_id)
+    return response_data, 201
 
+@chat.route("/delete-chat", methods=["DELETE"])
+def delete_chat():
+    db = get_database()
+    payload = request.get_json()
+
+    if "user_id" not in payload:
+        return {"error": "Missing required field: 'user_id'."}, 400
+
+    if "chat_id" not in payload:
+        return {"error": "Missing required field: 'chat_id'."}, 400
+
+    user_id = payload["user_id"]
+    chat_id = payload["chat_id"]
+
+    # Verify that user_id exists in the users collection
+    try:
+        result = db.chats.delete_one({"user_id": user_id, "_id": ObjectId(chat_id)})
+        if result.deleted_count == 0:
+            error = (
+                "Could not delete chat with user_id %s and chat_id %s",
+                user_id,
+                chat_id,
+            )
+            logging.error(error)
+            return {"error": error}, 500
+    except Exception as ex:
+        error = (
+            "Error deleting chat with user_id: %s and chat_id: %s. Ex: %s",
+            user_id,
+            chat_id,
+            ex,
+        )
+        logging.error(error)
+        return {"error": error}, 500
+
+    return {"deleted_chat_id": chat_id}, 201
 
 @chat.route("/send-message", methods=["POST"])
 def send_message():
@@ -129,7 +166,7 @@ def send_message():
         return {"error": "Missing required field: 'timestamp'."}, 400
 
     payload["chat_id"] = ObjectId(payload["chat_id"])
-    payload["user_id"] = ObjectId(payload["user_id"])
+    payload["user_id"] = payload["user_id"]
     payload["timestamp"] = datetime.now(tz=timezone.utc)
 
     user_msg = UserMessage.model_validate(payload)
@@ -140,10 +177,12 @@ def send_message():
             {"$push": {"user_messages": user_msg.model_dump()}},
         )
         if result.matched_count == 0:
-            logging.error(
-                "No chat found matching chat_id and user_id: %s", user_msg.chat_id
+            error = (
+                "No chat found matching chat_id and/or user_id: %s",
+                str(user_msg.chat_id),
             )
-            return {"error": "No chat found matching chat_id and user_id."}, 404
+            logging.error(error)
+            return {"error": error}, 404
     except Exception as ex:
         logging.error("Failed to upload user message to the database: %s", ex)
         return {"error": f"Failed to upload user message to the database: {ex}"}, 500

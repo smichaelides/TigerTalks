@@ -9,4 +9,3 @@ class Chat(Model):
     created_at: datetime
     updated_at: datetime
     user_id: str
-    chat_id: str | None = None

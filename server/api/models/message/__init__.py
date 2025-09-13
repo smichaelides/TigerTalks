@@ -10,7 +10,7 @@ class Message(Model):
 
 
 class UserMessage(Message):
-    user_id: ObjectId
+    user_id: str
 
 
 class ModelMessage(Message):
