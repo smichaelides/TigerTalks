@@ -15,15 +15,7 @@ interface MainPageProps {
 }
 
 function MainPage({ onLogout }: MainPageProps) {
-  const [chats, setChats] = useState<Chat[]>([
-    {
-      id: "default",
-      title: "New Chat",
-      messages: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  ]);
+  const [chats, setChats] = useState<Chat[]>([]);
   const navigate = useNavigate();
   const [currentChatId, setCurrentChatId] = useState("default");
   const [inputValue, setInputValue] = useState("");
@@ -33,6 +25,11 @@ function MainPage({ onLogout }: MainPageProps) {
   const currentChat = chats.find((chat) => chat.id === currentChatId);
   const messages = currentChat?.messages || [];
   const hasMessages = messages.length > 0;
+
+  // load all chats and create new chat if none exists.
+  useEffect(() => {
+    listChats();
+  }, []);
 
   // Auto-scroll to bottom whenever messages or loading state changes
   useEffect(() => {
@@ -54,7 +51,33 @@ function MainPage({ onLogout }: MainPageProps) {
     }
 
     return userId;
-  }
+  };
+
+  const listChats = async () => {
+    const userId = getUser();
+
+    try {
+      const response = await chatAPI.listChats(userId);
+      const chats = response.chats.map((chat) => {
+        return {
+          id: chat._id,
+          title: "New Chat",
+          messages: [],
+          createdAt: new Date(chat.created_at),
+          updatedAt: new Date(chat.updated_at),
+        };
+      });
+
+      setChats((prev) => [...prev, ...chats]);
+      if (chats.length > 0) {
+        setCurrentChatId(chats[chats.length - 1].id);
+        
+      }
+      setInputValue("");
+    } catch (error) {
+      console.error("Unable to list new chats:", error);
+    }
+  };
 
   const createNewChat = async () => {
     const userId = getUser();
@@ -93,8 +116,6 @@ function MainPage({ onLogout }: MainPageProps) {
     } catch (error) {
       console.error("Unable to delete chat. Ex:", chatId, error);
     }
-    
-
 
     setChats((prev) => prev.filter((chat) => chat.id !== chatId));
 

@@ -64,8 +64,8 @@ export const chatAPI = {
   },
 
   // List user's chats
-  listChats: async (userId: string): Promise<{ chats: Array<{ _id: string }> }> => {
-    return apiRequest<{ chats: Array<{ _id: string }> }>(`/chat/list-chats?user_id=${userId}`);
+  listChats: async (userId: string): Promise<{ chats: Array<{ _id: string, created_at: string, updated_at: string }> }> => {
+    return apiRequest<{ chats: Array<{ _id: string, created_at: string, updated_at: string  }> }>(`/chat/list-chats?user_id=${userId}`);
   },
 
   // Get chat with messages

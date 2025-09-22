@@ -61,7 +61,12 @@ def list_chats():
         return {"error": "Missing required field: 'user_id'."}, 400
 
     try:
-        chats = list(db.chats.find({"user_id": ObjectId(user_id)}, {"_id": 1}))
+        chats = list(
+            db.chats.find(
+            {"user_id": user_id},
+            {"_id": 1, "created_at": 1, "updated_at": 1},
+            )
+        )
         # only lists out the _id, we can call /get-chat to get the messages
         for chat_dict in chats:
             chat_dict["_id"] = str(chat_dict["_id"])
