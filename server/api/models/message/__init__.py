@@ -4,13 +4,13 @@ from server.api.models._base import Model
 
 
 class Message(Model):
-    chat_id: ObjectId
+    chatId: ObjectId
     message: str
     timestamp: datetime
 
 
 class UserMessage(Message):
-    user_id: str
+    userId: str
 
 
 class ModelMessage(Message):

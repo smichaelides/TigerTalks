@@ -4,8 +4,9 @@ from server.api.models.message import UserMessage, ModelMessage
 
 
 class Chat(Model):
-    user_messages: list[UserMessage]
-    model_messages: list[ModelMessage]
-    created_at: datetime
-    updated_at: datetime
-    user_id: str
+    title: str = "New Chat"
+    userMessages: list[UserMessage]
+    modelMessages: list[ModelMessage]
+    createdAt: datetime
+    updatedAt: datetime
+    userId: str

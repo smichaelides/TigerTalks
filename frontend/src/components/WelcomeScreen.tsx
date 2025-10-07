@@ -24,8 +24,6 @@ function WelcomeScreen({
     "What's the weather like today?"
   ];
 
-  const handleQuestionClick = (question: string) => handleSendMessage(question);
-
   return (
     <div className="welcome-container">
       <div className="welcome-content">
@@ -59,7 +57,7 @@ function WelcomeScreen({
             <button
               key={index}
               className="suggested-question-btn"
-              onClick={() => handleQuestionClick(question)}
+              onClick={() => handleSendMessage(question)}
               disabled={isLoading}
             >
               {question}

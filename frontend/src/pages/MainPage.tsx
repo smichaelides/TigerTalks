@@ -17,19 +17,13 @@ interface MainPageProps {
 function MainPage({ onLogout }: MainPageProps) {
   const [chats, setChats] = useState<Chat[]>([]);
   const navigate = useNavigate();
+  const [currentChat, setCurrentChat] = useState<Chat | null>(null);
   const [currentChatId, setCurrentChatId] = useState("default");
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const currentChat = chats.find((chat) => chat.id === currentChatId);
   const messages = currentChat?.messages || [];
-  const hasMessages = messages.length > 0;
-
-  // load all chats and create new chat if none exists.
-  useEffect(() => {
-    listChats();
-  }, []);
 
   // Auto-scroll to bottom whenever messages or loading state changes
   useEffect(() => {
@@ -45,7 +39,7 @@ function MainPage({ onLogout }: MainPageProps) {
   const getUser = () => {
     const userId = localStorage.getItem("userId");
 
-    if (!userId) {
+    if (userId === "undefined" || userId === null) {
       navigate("/login");
       return "";
     }
@@ -53,31 +47,62 @@ function MainPage({ onLogout }: MainPageProps) {
     return userId;
   };
 
+  const getChatTitle = (title: string, messages: Message[]) => {
+    return title === "New Chat" && messages.length > 0
+      ? messages[0].message.substring(0, 30) +
+          (messages[0].message.length > 30 ? "..." : "")
+      : title;
+  };
+
   const listChats = async () => {
     const userId = getUser();
 
     try {
       const response = await chatAPI.listChats(userId);
-      const chats = response.chats.map((chat) => {
+      const chats = response.chats.map((chat): Chat => {
+        console.log();
+        const userMessages = chat.userMessages.map((m: Message) => ({
+          message: m.message,
+          isUser: true,
+          timestamp: new Date(m.timestamp),
+        }));
+
+        const modelMessages = chat.modelMessages.map((m: Message) => ({
+          message: m.message,
+          isUser: false,
+          timestamp: new Date(m.timestamp),
+        }));
+
+        const messages = [...userMessages, ...modelMessages].sort(
+          (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
+        );
         return {
-          id: chat._id,
-          title: "New Chat",
-          messages: [],
-          createdAt: new Date(chat.created_at),
-          updatedAt: new Date(chat.updated_at),
+          _id: chat._id,
+          title: getChatTitle("New Chat", messages),
+          userMessages: chat.userMessages,
+          modelMessages: chat.modelMessages,
+          messages: messages,
+          messageCount: messages.length,
+          createdAt: new Date(chat.createdAt),
+          updatedAt: new Date(chat.updatedAt),
         };
       });
 
-      setChats((prev) => [...prev, ...chats]);
-      if (chats.length > 0) {
-        setCurrentChatId(chats[chats.length - 1].id);
-        
-      }
+      chats.reverse()
+      setCurrentChatId(chats[0]._id);
+      setCurrentChat(chats[0]);
+      console.log("Chats[0]", chats[0])
+      setChats(chats);
       setInputValue("");
     } catch (error) {
       console.error("Unable to list new chats:", error);
     }
   };
+
+  // load all chats and create new chat if none exists.
+  useEffect(() => {
+    listChats();
+  }, []);
 
   const createNewChat = async () => {
     const userId = getUser();
@@ -86,24 +111,88 @@ function MainPage({ onLogout }: MainPageProps) {
       const chat = await chatAPI.createChat(userId);
 
       const newChat: Chat = {
-        id: chat.id,
+        _id: chat._id,
         title: "New Chat",
+        userMessages: [],
+        modelMessages: [],
         messages: [],
-        createdAt: new Date(chat.created_at),
-        updatedAt: new Date(chat.updated_at),
+        messageCount: 0,
+        createdAt: new Date(chat.createdAt),
+        updatedAt: new Date(chat.updatedAt),
       };
 
       setChats((prev) => [...prev, newChat]);
-      setCurrentChatId(chat.id);
+      setCurrentChatId(newChat._id);
+      setCurrentChat(newChat);
       setInputValue("");
     } catch (error) {
       console.error("Unable to create new chat:", error);
     }
   };
 
-  const selectChat = (chatId: string) => {
+  const selectChat = async (chatId: string) => {
     setCurrentChatId(chatId);
     setInputValue("");
+    const userId = getUser();
+    if (!userId) return;
+
+    const fetchedChat = chats.find((chat) => chat._id === chatId);
+
+    if (!fetchedChat) return;
+
+    const userMessages: Message[] = (fetchedChat.userMessages || []).map(
+      (message: Message) => {
+        const userMessage: Message = {
+          message: message.message,
+          isUser: true,
+          timestamp: new Date(message.timestamp),
+        };
+        return userMessage;
+      }
+    );
+
+    const modelMessages: Message[] = (fetchedChat.modelMessages || []).map(
+      (message: Message) => {
+        const modelMessage: Message = {
+          message: message.message,
+          isUser: false,
+          timestamp: new Date(message.timestamp),
+        };
+        return modelMessage;
+      }
+    );
+
+    const messages = [...userMessages, ...modelMessages].sort(
+      (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
+    );
+
+    const tempChatForTitle = {
+      ...(fetchedChat || {}),
+      title: fetchedChat.title ?? "New Chat",
+      messages,
+    } as Chat;
+
+    const currentChat: Chat = {
+      _id: fetchedChat._id,
+      title: getChatTitle(tempChatForTitle.title, tempChatForTitle.messages),
+      userMessages,
+      modelMessages,
+      messages,
+      messageCount: messages.length,
+      createdAt: new Date(fetchedChat.createdAt),
+      updatedAt: new Date(fetchedChat.updatedAt),
+    };
+
+    setCurrentChat(currentChat);
+
+    setChats((prev) =>
+      prev.map((c) => {
+        if (c._id === chatId) {
+          return currentChat;
+        }
+        return c;
+      })
+    );
   };
 
   const deleteChat = async (chatId: string) => {
@@ -117,29 +206,46 @@ function MainPage({ onLogout }: MainPageProps) {
       console.error("Unable to delete chat. Ex:", chatId, error);
     }
 
-    setChats((prev) => prev.filter((chat) => chat.id !== chatId));
+    setChats((prev) => prev.filter((chat) => chat._id !== chatId));
 
     // If we're deleting the current chat, switch to new chat
     if (chatId === currentChatId) {
-      const remainingChats = chats.filter((chat) => chat.id !== chatId);
+      const remainingChats = chats.filter((chat) => chat._id !== chatId);
       if (remainingChats.length > 0) {
-        setCurrentChatId(remainingChats[0].id);
+        setCurrentChatId(remainingChats[0]._id);
       }
     }
   };
 
   const updateChatMessages = (chatId: string, newMessages: Message[]) => {
+    setCurrentChat((prev) => {
+      if (!prev) return prev;
+      const newTitle =
+        prev.title === "New Chat" && newMessages.length > 0
+          ? newMessages[0].message.substring(0, 30) +
+            (newMessages[0].message.length > 30 ? "..." : "")
+          : prev.title;
+      return {
+        ...prev,
+        messages: newMessages,
+        messageCount: newMessages.length,
+        updatedAt: new Date(),
+        title: newTitle,
+      };
+    });
+
     setChats((prev) =>
       prev.map((chat) =>
-        chat.id === chatId
+        chat._id === chatId
           ? {
               ...chat,
               messages: newMessages,
+              messageCount: newMessages.length,
               updatedAt: new Date(),
               title:
                 chat.title === "New Chat" && newMessages.length > 0
-                  ? newMessages[0].text.substring(0, 30) +
-                    (newMessages[0].text.length > 30 ? "..." : "")
+                  ? newMessages[0].message.substring(0, 30) +
+                    (newMessages[0].message.length > 30 ? "..." : "")
                   : chat.title,
             }
           : chat
@@ -159,8 +265,7 @@ function MainPage({ onLogout }: MainPageProps) {
     if (!textToSend.trim()) return;
 
     const userMessage: Message = {
-      id: Date.now().toString(),
-      text: textToSend,
+      message: textToSend,
       isUser: true,
       timestamp: new Date(),
     };
@@ -175,20 +280,17 @@ function MainPage({ onLogout }: MainPageProps) {
     updateChatMessages(currentChatId, newMessages);
     setInputValue("");
     setIsLoading(true);
-    console.log("Loading state set to true");
 
     // Simulate AI response
     setTimeout(() => {
       const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: chatResponse.model_message,
+        message: chatResponse.model_message,
         isUser: false,
         timestamp: new Date(),
       };
       const finalMessages = [...newMessages, aiMessage];
       updateChatMessages(currentChatId, finalMessages);
       setIsLoading(false);
-      console.log("Loading state set to false");
     }, 2000);
   };
 
@@ -214,10 +316,10 @@ function MainPage({ onLogout }: MainPageProps) {
 
         <main
           className={`chat-container ${
-            hasMessages ? "chat-container-with-messages" : ""
+            !(currentChat && currentChat.messages.length > 0) ? "chat-container-with-messages" : ""
           }`}
         >
-          {!hasMessages ? (
+          {(currentChat && currentChat.messages.length === 0) ? (
             <WelcomeScreen
               inputValue={inputValue}
               setInputValue={setInputValue}

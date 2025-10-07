@@ -1,14 +1,16 @@
 export interface Message {
-  id: string;
-  text: string;
+  message: string;
   isUser: boolean;
   timestamp: Date;
 }
 
 export interface Chat {
-  id: string;
+  _id: string;
   title: string;
   messages: Message[];
+  userMessages: Message[];
+  modelMessages: Message[];
+  messageCount: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -21,7 +23,7 @@ export interface ChatMessage {
 }
 
 export interface User {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   grad_year: number;

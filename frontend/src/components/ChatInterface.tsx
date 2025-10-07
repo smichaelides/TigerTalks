@@ -28,9 +28,9 @@ function ChatInterface({
     <div className="chat-layout">
       {/* Messages */}
       <div className="messages-container">
-        {messages.map((message) => (
+        {messages.map((message, index) => (
           <div
-            key={message.id}
+            key={index}
             className={`message ${message.isUser ? 'message-user' : 'message-ai'}`}
           >
             <div className="message-content">
@@ -40,11 +40,11 @@ function ChatInterface({
                 </div>
               )}
               <div className={`message-bubble ${message.isUser ? 'user-bubble' : 'ai-bubble'}`}>
-                <p className="message-text">{message.text}</p>
+                <p className="message-text">{message.message}</p>
               </div>
             </div>
             <div className={`message-time ${message.isUser ? 'time-right' : 'time-left'}`}>
-              {message.timestamp.toLocaleTimeString([], { 
+              {new Date(message.timestamp).toLocaleTimeString([], { 
                 hour: '2-digit', 
                 minute: '2-digit' 
               })}

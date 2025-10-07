@@ -10,21 +10,23 @@ user = Blueprint("user", __name__, url_prefix="/user")
 @user.route("/get-user", methods=["GET"])
 def get_user():
     db = get_database()
-    user_id = request.args.get("user_id")
+    user_id = request.args.get("userId")
 
     try:
         db_user = db.users.find_one({"_id": ObjectId(user_id)})
-        if db_user:
-            db_user["id"] = user_id
         if not db_user:
             return {"error": f"User with id {user_id} not found"}, 404
+        # expose string id to the model via public 'id' field and avoid touching protected attributes
+        db_user["id"] = str(db_user["_id"])
         fetched_user = User.model_validate(db_user)
-        fetched_user.id = str(db_user["_id"])
     except Exception as ex:
         logging.error("Failed to get user %s: %s", user_id, ex)
         return {"error": f"Failed to get user {user_id}"}, 500
 
-    return fetched_user.model_dump_json(), 200
+    # expose original MongoDB _id as string in the response
+    result = fetched_user.model_dump()
+    result["_id"] = str(db_user["_id"])
+    return result, 200
 
 
 @user.route("/create-user", methods=["POST"])
@@ -38,7 +40,7 @@ def create_user():
         return {"error": "Missing required field: email"}, 400
 
     new_user = User(
-        id=None,
+        _id=None,
         name=payload.get("name"),
         email=payload.get("email"),
         grad_year=payload.get("grad_year"),
@@ -60,23 +62,23 @@ def update_concentration():
     db = get_database()
     payload = request.get_json()
 
-    if "user_id" not in payload:
-        return {"error": "Missing required field: user_id"}, 400
+    if "userId" not in payload:
+        return {"error": "Missing required field: userId"}, 400
     if "concentration" not in payload:
         return {"error": "Missing required field: concentration"}, 400
 
-    user_id: str = payload.get("user_id")
+    userId: str = payload.get("userId")
     concentration: str = payload.get("concentration")
 
     try:
         db.users.update_one(
-            {"_id": ObjectId(user_id)}, {"$set": {"concentration": concentration}}
+            {"_id": ObjectId(userId)}, {"$set": {"concentration": concentration}}
         )
     except Exception as ex:
         logging.error(
             "Failed to update concentration {%s} for user %s: %s",
             concentration,
-            user_id,
+            userId,
             ex,
         )
         return {"error": f"Failed to update concentration {concentration}."}, 500
@@ -89,23 +91,23 @@ def update_certificates():
     db = get_database()
     payload = request.get_json()
 
-    if "user_id" not in payload:
-        return {"error": "Missing required field: user_id"}, 400
+    if "userId" not in payload:
+        return {"error": "Missing required field: userId"}, 400
     if "certificates" not in payload:
         return {"error": "Missing required field: certificates"}, 400
 
-    user_id: str = payload.get("user_id")
+    userId: str = payload.get("userId")
     certificates: list[str] = payload.get("certificates")
 
     try:
         db.users.update_one(
-            {"_id": ObjectId(user_id)}, {"$set": {"certificates": certificates}}
+            {"_id": ObjectId(userId)}, {"$set": {"certificates": certificates}}
         )
     except Exception as ex:
         logging.error(
             "Failed to update certificates {%s} for user %s: %s",
             certificates,
-            user_id,
+            userId,
             ex,
         )
         return {"error": f"Failed to update certificates {certificates}."}, 500
