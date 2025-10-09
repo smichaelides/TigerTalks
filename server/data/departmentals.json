@@ -1,0 +1,583 @@
+{
+    "term": [
+      {
+        "subjects": [
+          {
+            "code": "AAS",
+            "name": "African American Studies",
+            "courses": []
+          },
+          {
+            "code": "AFS",
+            "name": "African Studies",
+            "courses": []
+          },
+          {
+            "code": "AMS",
+            "name": "American Studies",
+            "courses": []
+          },
+          {
+            "code": "ANT",
+            "name": "Anthropology",
+            "courses": []
+          },
+          {
+            "code": "AOS",
+            "name": "Atmospheric & Oceanic Sciences",
+            "courses": []
+          },
+          {
+            "code": "APC",
+            "name": "Appl and Computational Math",
+            "courses": []
+          },
+          {
+            "code": "ARA",
+            "name": "Arabic",
+            "courses": []
+          },
+          {
+            "code": "ARC",
+            "name": "Architecture",
+            "courses": []
+          },
+          {
+            "code": "ART",
+            "name": "Art and Archaeology",
+            "courses": []
+          },
+          {
+            "code": "ASA",
+            "name": "Asian American Studies",
+            "courses": []
+          },
+          {
+            "code": "ASL",
+            "name": "American Sign Language",
+            "courses": []
+          },
+          {
+            "code": "AST",
+            "name": "Astrophysical Sciences",
+            "courses": []
+          },
+          {
+            "code": "ATL",
+            "name": "Atelier",
+            "courses": []
+          },
+          {
+            "code": "BCS",
+            "name": "Bosnian-Croatian-Serbian",
+            "courses": []
+          },
+          {
+            "code": "BNG",
+            "name": "Bioengineering",
+            "courses": []
+          },
+          {
+            "code": "BPY",
+            "name": "Biophysics",
+            "courses": []
+          },
+          {
+            "code": "CBE",
+            "name": "Chemical and Biological Engr",
+            "courses": []
+          },
+          {
+            "code": "CDH",
+            "name": "Computational/Data Humanities",
+            "courses": []
+          },
+          {
+            "code": "CEE",
+            "name": "Civil and Environmental Engr",
+            "courses": []
+          },
+          {
+            "code": "CGS",
+            "name": "Cognitive Science",
+            "courses": []
+          },
+          {
+            "code": "CHI",
+            "name": "Chinese",
+            "courses": []
+          },
+          {
+            "code": "CHM",
+            "name": "Chemistry",
+            "courses": []
+          },
+          {
+            "code": "CHV",
+            "name": "Center for Human Values",
+            "courses": []
+          },
+          {
+            "code": "CLA",
+            "name": "Classics",
+            "courses": []
+          },
+          {
+            "code": "CLG",
+            "name": "Classical Greek",
+            "courses": []
+          },
+          {
+            "code": "COM",
+            "name": "Comparative Literature",
+            "courses": []
+          },
+          {
+            "code": "COS",
+            "name": "Computer Science",
+            "courses": []
+          },
+          {
+            "code": "CSE",
+            "name": "Computational Sci & Engr",
+            "courses": []
+          },
+          {
+            "code": "CTL",
+            "name": "Center for Teaching & Learning",
+            "courses": []
+          },
+          {
+            "code": "CWR",
+            "name": "Creative Writing",
+            "courses": []
+          },
+          {
+            "code": "DAN",
+            "name": "Dance",
+            "courses": []
+          },
+          {
+            "code": "EAS",
+            "name": "East Asian Studies",
+            "courses": []
+          },
+          {
+            "code": "ECE",
+            "name": "Electrical & Computer Eng",
+            "courses": []
+          },
+          {
+            "code": "ECO",
+            "name": "Economics",
+            "courses": []
+          },
+          {
+            "code": "ECS",
+            "name": "European Cultural Studies",
+            "courses": []
+          },
+          {
+            "code": "EEB",
+            "name": "Ecology and Evol Biology",
+            "courses": []
+          },
+          {
+            "code": "EGR",
+            "name": "Engineering",
+            "courses": []
+          },
+          {
+            "code": "ENE",
+            "name": "Energy Studies",
+            "courses": []
+          },
+          {
+            "code": "ENG",
+            "name": "English",
+            "courses": []
+          },
+          {
+            "code": "ENT",
+            "name": "Entrepreneurship",
+            "courses": []
+          },
+          {
+            "code": "ENV",
+            "name": "Environmental Studies",
+            "courses": []
+          },
+          {
+            "code": "EPS",
+            "name": "Contemporary European Politics",
+            "courses": []
+          },
+          {
+            "code": "FIN",
+            "name": "Finance",
+            "courses": []
+          },
+          {
+            "code": "FIT",
+            "name": "French and Italian",
+            "courses": []
+          },
+          {
+            "code": "FRE",
+            "name": "French",
+            "courses": []
+          },
+          {
+            "code": "FRS",
+            "name": "First Year Seminars",
+            "courses": []
+          },
+          {
+            "code": "GEO",
+            "name": "Geosciences",
+            "courses": []
+          },
+          {
+            "code": "GER",
+            "name": "German",
+            "courses": []
+          },
+          {
+            "code": "GEZ",
+            "name": "Ge'ez",
+            "courses": []
+          },
+          {
+            "code": "GHP",
+            "name": "Global Health & Health Policy",
+            "courses": []
+          },
+          {
+            "code": "GSS",
+            "name": "Gender and Sexuality Studies",
+            "courses": []
+          },
+          {
+            "code": "HEB",
+            "name": "Hebrew",
+            "courses": []
+          },
+          {
+            "code": "HIN",
+            "name": "Hindi",
+            "courses": []
+          },
+          {
+            "code": "HIS",
+            "name": "History",
+            "courses": []
+          },
+          {
+            "code": "HLS",
+            "name": "Hellenic Studies",
+            "courses": []
+          },
+          {
+            "code": "HOS",
+            "name": "History of Science",
+            "courses": []
+          },
+          {
+            "code": "HUM",
+            "name": "Humanistic Studies",
+            "courses": []
+          },
+          {
+            "code": "ISC",
+            "name": "Integrated Science Curriculum",
+            "courses": []
+          },
+          {
+            "code": "ITA",
+            "name": "Italian",
+            "courses": []
+          },
+          {
+            "code": "JDS",
+            "name": "Judaic Studies",
+            "courses": []
+          },
+          {
+            "code": "JPN",
+            "name": "Japanese",
+            "courses": []
+          },
+          {
+            "code": "JRN",
+            "name": "Journalism",
+            "courses": []
+          },
+          {
+            "code": "KOR",
+            "name": "Korean",
+            "courses": []
+          },
+          {
+            "code": "LAO",
+            "name": "Latino Studies",
+            "courses": []
+          },
+          {
+            "code": "LAS",
+            "name": "Latin American Studies",
+            "courses": []
+          },
+          {
+            "code": "LAT",
+            "name": "Latin",
+            "courses": []
+          },
+          {
+            "code": "LIN",
+            "name": "Linguistics",
+            "courses": []
+          },
+          {
+            "code": "MAE",
+            "name": "Mech and Aerospace Engr",
+            "courses": []
+          },
+          {
+            "code": "MAT",
+            "name": "Mathematics",
+            "courses": []
+          },
+          {
+            "code": "MED",
+            "name": "Medieval Studies",
+            "courses": []
+          },
+          {
+            "code": "MOD",
+            "name": "Media and Modernity",
+            "courses": []
+          },
+          {
+            "code": "MOG",
+            "name": "Modern Greek",
+            "courses": []
+          },
+          {
+            "code": "MOL",
+            "name": "Molecular Biology",
+            "courses": []
+          },
+          {
+            "code": "MPP",
+            "name": "Music Performance",
+            "courses": []
+          },
+          {
+            "code": "MSE",
+            "name": "Materials Science and Engr",
+            "courses": []
+          },
+          {
+            "code": "MTD",
+            "name": "Music Theater",
+            "courses": []
+          },
+          {
+            "code": "MUS",
+            "name": "Music",
+            "courses": []
+          },
+          {
+            "code": "NES",
+            "name": "Near Eastern Studies",
+            "courses": []
+          },
+          {
+            "code": "NEU",
+            "name": "Neuroscience",
+            "courses": []
+          },
+          {
+            "code": "ORF",
+            "name": "Oper Res and Financial Engr",
+            "courses": []
+          },
+          {
+            "code": "PAW",
+            "name": "Ancient World",
+            "courses": []
+          },
+          {
+            "code": "PER",
+            "name": "Persian",
+            "courses": []
+          },
+          {
+            "code": "PHI",
+            "name": "Philosophy",
+            "courses": []
+          },
+          {
+            "code": "PHY",
+            "name": "Physics",
+            "courses": []
+          },
+          {
+            "code": "PLS",
+            "name": "Polish",
+            "courses": []
+          },
+          {
+            "code": "POL",
+            "name": "Politics",
+            "courses": []
+          },
+          {
+            "code": "POP",
+            "name": "Population Studies",
+            "courses": []
+          },
+          {
+            "code": "POR",
+            "name": "Portuguese",
+            "courses": []
+          },
+          {
+            "code": "PSY",
+            "name": "Psychology",
+            "courses": []
+          },
+          {
+            "code": "QCB",
+            "name": "Quantitative Computational Bio",
+            "courses": []
+          },
+          {
+            "code": "QSE",
+            "name": "Quantum Science and Engineerin",
+            "courses": []
+          },
+          {
+            "code": "REL",
+            "name": "Religion",
+            "courses": []
+          },
+          {
+            "code": "RES",
+            "name": "Russian, East Europ, Eurasian",
+            "courses": []
+          },
+          {
+            "code": "ROB",
+            "name": "Robotics",
+            "courses": []
+          },
+          {
+            "code": "RUS",
+            "name": "Russian",
+            "courses": []
+          },
+          {
+            "code": "SAN",
+            "name": "Sanskrit",
+            "courses": []
+          },
+          {
+            "code": "SAS",
+            "name": "South Asian Studies",
+            "courses": []
+          },
+          {
+            "code": "SLA",
+            "name": "Slavic Languages and Lit",
+            "courses": []
+          },
+          {
+            "code": "SML",
+            "name": "Statistics & Machine Learning",
+            "courses": []
+          },
+          {
+            "code": "SOC",
+            "name": "Sociology",
+            "courses": []
+          },
+          {
+            "code": "SPA",
+            "name": "Spanish",
+            "courses": []
+          },
+          {
+            "code": "SPI",
+            "name": "Public & International Affairs",
+            "courses": []
+          },
+          {
+            "code": "SPO",
+            "name": "Spanish and Portuguese",
+            "courses": []
+          },
+          {
+            "code": "STC",
+            "name": "Science and Technology Center",
+            "courses": []
+          },
+          {
+            "code": "SWA",
+            "name": "Swahili",
+            "courses": []
+          },
+          {
+            "code": "THR",
+            "name": "Theater",
+            "courses": []
+          },
+          {
+            "code": "TPP",
+            "name": "Teacher Preparation",
+            "courses": []
+          },
+          {
+            "code": "TRA",
+            "name": "Translation, Intercultural Com",
+            "courses": []
+          },
+          {
+            "code": "TUR",
+            "name": "Turkish",
+            "courses": []
+          },
+          {
+            "code": "TWI",
+            "name": "Twi",
+            "courses": []
+          },
+          {
+            "code": "UKR",
+            "name": "Ukrainian",
+            "courses": []
+          },
+          {
+            "code": "URB",
+            "name": "Urban Studies",
+            "courses": []
+          },
+          {
+            "code": "URD",
+            "name": "Urdu",
+            "courses": []
+          },
+          {
+            "code": "VIS",
+            "name": "Visual Arts",
+            "courses": []
+          },
+          {
+            "code": "WRI",
+            "name": "Princeton Writing Program",
+            "courses": []
+          }
+        ]
+      }
+    ]
+  }
