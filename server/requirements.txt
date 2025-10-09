@@ -1,6 +1,8 @@
 annotated-types==0.7.0
 astroid==3.3.11
+beautifulsoup4==4.14.2
 blinker==1.9.0
+bs4==0.0.2
 certifi==2025.10.5
 charset-normalizer==3.4.3
 click==8.2.1
@@ -20,6 +22,7 @@ pylint==3.3.8
 pymongo==4.14.0
 python-dotenv==1.1.1
 requests==2.32.5
+soupsieve==2.8
 tomlkit==0.13.3
 typing-inspection==0.4.1
 typing_extensions==4.14.1
