@@ -1,9 +1,12 @@
-from typing import Optional
-from api.models._base import Model
+from bson import ObjectId
+from server.api.models._base import Model
 
 
 class Semester(Model):
-    code: int  # e.g., 1222 for Spring 2022
-    name: str  # e.g., "Spring 2022"
-    start_date: Optional[str] = None
-    end_date: Optional[str] = None
+    _id: ObjectId  # 1262
+    code: str  # "1262"
+    name: str  # "F25-26"
+    cal_name: str  # "Fall 2025"
+    reg_name: str  # "25-26 Fall"
+    start_date: str
+    end_date: str

@@ -9,19 +9,14 @@ import subprocess
 import json
 import sys
 import os
-import time
-import requests
-from bs4 import BeautifulSoup
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any, Optional
 import logging
-from urllib.parse import urljoin
+from bs4 import BeautifulSoup
+import requests
+
 
 # Add the server directory to the path so we can import our models
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from database import get_database
-from api.models.courses import Course, Reading, Crosslisting, PDF
-from api.models.semester import Semester
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -86,9 +81,13 @@ def import_data_from_studentapp(data: Dict[str, Any]) -> None:
     
     # Convert term code to integer
     data['term'][0]['code'] = int(data['term'][0]['code'])
+
+    terms = []
     
     for term in data['term']:
-        import_term(term)
+        terms.append(import_term(term))
+
+    return terms
 
 
 def import_term(term: Dict[str, Any]) -> None:
@@ -104,18 +103,22 @@ def import_term(term: Dict[str, Any]) -> None:
     }
     
     try:
-        # Upsert semester
-        db.semesters.update_one(
-            {"code": term['code']},
-            {"$set": semester_data},
-            upsert=True
-        )
+        # # Upsert semester
+        # db.semesters.update_one(
+        #     {"code": term['code']},
+        #     {"$set": semester_data},
+        #     upsert=True
+        # )
         logger.info(f"Successfully created/updated semester {term['cal_name']}")
         
+        subjects = []
+
         # Process each subject within this semester
         for subject in term.get('subjects', []):
-            import_subject(term, subject)
-            
+            subject = import_subject(term, subject)
+            subjects.append(subject)
+
+        return subject
     except Exception as e:
         logger.error(f"Failed to create/update semester {term['cal_name']}: {e}")
 
@@ -132,6 +135,9 @@ def decode_escaped_characters(html: str) -> str:
 def import_subject(semester: Dict[str, Any], subject: Dict[str, Any]) -> None:
     """Import courses from a subject/department"""
     logger.debug(f"Processing subject {subject['code']} in semester {semester['cal_name']}")
+
+
+    courses = []
     
     for course_data in subject.get('courses', []):
         # Skip courses with invalid catalog numbers
@@ -146,7 +152,9 @@ def import_subject(semester: Dict[str, Any], subject: Dict[str, Any]) -> None:
             course_data['detail']['description'] = decode_escaped_characters(course_data['detail']['description'])
         
         # Get detailed course information from registrar API
-        get_course_details(semester, subject['code'], course_data)
+        courses.append(get_course_details(semester, subject['code'], course_data))
+
+    return courses
 
 
 def get_course_details(semester: Dict[str, Any], subject_code: str, course_data: Dict[str, Any]) -> None:
@@ -213,8 +221,9 @@ def get_course_details(semester: Dict[str, Any], subject_code: str, course_data:
         process_other_information(course_data, frontend_api_course_details)
         
         # Create course in database
-        create_course(semester, subject_code, course_data)
+        course = create_course(semester, subject_code, course_data)
         
+        return course
     except Exception as e:
         logger.error(f"Error processing course {course_data['course_id']}: {e}")
         courses_pending_processing -= 1
@@ -242,6 +251,8 @@ def process_grading_basis(course_data: Dict[str, Any], details: Dict[str, Any]) 
     else:
         course_data['pdf'] = {'required': False, 'permitted': True}
         course_data['audit'] = True
+
+
 
 
 def process_grading_components(course_data: Dict[str, Any], details: Dict[str, Any]) -> None:
@@ -307,54 +318,30 @@ def process_other_information(course_data: Dict[str, Any], details: Dict[str, An
 
 def create_course(semester: Dict[str, Any], subject_code: str, course_data: Dict[str, Any]) -> None:
     """Create course in database"""
-    global courses_pending_processing
-    
-    try:
-        # Prepare course document
-        course_doc = {
-            'course_id': course_data['course_id'],
-            'catalog_number': course_data['catalog_number'],
-            'title': course_data['title'],
-            'semester': semester['code'],
-            'department': subject_code,
-            'description': course_data.get('detail', {}).get('description'),
-            'pdf': course_data.get('pdf', {'permitted': True, 'required': False}),
-            'audit': course_data.get('audit', True),
-            'grading': course_data.get('grading', []),
-            'assignments': course_data.get('assignments'),
-            'reserved_seats': course_data.get('reserved_seats', []),
-            'readings': course_data.get('reading_list', []),
-            'prerequisites': course_data.get('prerequisites'),
-            'other_information': course_data.get('other_information'),
-            'other_requirements': course_data.get('other_requirements'),
-            'website': course_data.get('website'),
-            'distribution': course_data.get('distribution_area'),
-            'open': True,
-            'new': False
-        }
-        
-        # Upsert course
-        db.courses.update_one(
-            {
-                'course_id': course_data['course_id'],
-                'semester': semester['code']
-            },
-            {'$set': course_doc},
-            upsert=True
-        )
-        
-        logger.debug(f"Successfully created/updated course {course_data['course_id']}")
-        
-    except Exception as e:
-        logger.error(f"Failed to create course {course_data['course_id']}: {e}")
-    finally:
-        courses_pending_processing -= 1
-        
-        # If no more courses pending, exit
-        if courses_pending_processing == 0:
-            logger.info("All courses successfully processed.")
-            sys.exit(0)
+    # Prepare course document
+    course_doc = {
+        'course_id': course_data['course_id'],
+        'catalog_number': course_data['catalog_number'],
+        'title': course_data['title'],
+        'semester': semester['code'],
+        'department': subject_code,
+        'description': course_data.get('detail', {}).get('description'),
+        'pdf': course_data.get('pdf', {'permitted': True, 'required': False}),
+        'audit': course_data.get('audit', True),
+        'grading': course_data.get('grading', []),
+        'assignments': course_data.get('assignments'),
+        'reserved_seats': course_data.get('reserved_seats', []),
+        'readings': course_data.get('reading_list', []),
+        'prerequisites': course_data.get('prerequisites'),
+        'other_information': course_data.get('other_information'),
+        'other_requirements': course_data.get('other_requirements'),
+        'website': course_data.get('website'),
+        'distribution': course_data.get('distribution_area'),
+        'open': True,
+        'new': False
+    }
 
+    return course_doc
 
 def get_registrar_frontend_api_token() -> Optional[str]:
     """Get the registrar frontend API token"""
@@ -366,19 +353,6 @@ def get_registrar_frontend_api_token() -> Optional[str]:
     # Try to scrape token from registrar website
     try:
         headers = {
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache',
-            'Sec-Ch-Ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
-            'Sec-Ch-Ua-Mobile': '?0',
-            'Sec-Ch-Ua-Platform': '"macOS"',
-            'Sec-Fetch-Dest': 'document',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-Site': 'none',
-            'Sec-Fetch-User': '?1',
-            'Upgrade-Insecure-Requests': '1',
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         }
         response = requests.get('https://registrar.princeton.edu/course-offerings', headers=headers, timeout=30)
@@ -423,6 +397,8 @@ def get_registrar_frontend_api_token() -> Optional[str]:
 def main():
     """Main function"""
     global registrar_frontend_api_token, db
+
+
     
     logger.info("Starting script to update database with latest course listings information")
     
@@ -439,14 +415,6 @@ def main():
     
     logger.info("Got registrar frontend API token")
     
-    # Connect to database
-    try:
-        db = get_database()
-        logger.info("Connected to database")
-    except Exception as e:
-        logger.error(f"Failed to connect to database: {e}")
-        sys.exit(1)
-    
     # Load courses from StudentApp API
     data = load_courses_from_studentapp(query_string)
     if not data:
@@ -454,8 +422,8 @@ def main():
         sys.exit(1)
     
     # Process the data
-    import_data_from_studentapp(data)
-
+    terms = import_data_from_studentapp(data)
+    print(terms)
 
 if __name__ == "__main__":
     main()
