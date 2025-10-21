@@ -1240,3 +1240,322 @@ body {
     padding: 1rem;
   }
 }
+
+/* Welcome Page Styles - Consistent with Login/Settings */
+.welcome-page-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 1rem;
+}
+
+.welcome-page-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1.5rem;
+  padding: 2.5rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 48rem;
+  animation: loginFadeIn 0.6s ease-out;
+}
+
+.welcome-page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.welcome-page-logo {
+  width: 3rem;
+  height: 3rem;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
+
+.welcome-page-title-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.welcome-page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.welcome-page-tiggy {
+  width: 2.5rem;
+  height: 2.5rem;
+  object-fit: contain;
+}
+
+.welcome-page-subtitle {
+  color: #6b7280;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.welcome-page-progress {
+  margin-bottom: 2rem;
+}
+
+.welcome-page-progress-bar {
+  width: 100%;
+  height: 0.5rem;
+  background-color: #e5e7eb;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.welcome-page-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff8c00, #ff6b35);
+  transition: width 0.3s ease;
+}
+
+.welcome-page-progress-text {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.welcome-page-content {
+  margin-bottom: 2rem;
+}
+
+.welcome-page-step {
+  text-align: center;
+}
+
+.welcome-page-step-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.welcome-page-step-subtitle {
+  color: #6b7280;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+.welcome-page-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.welcome-page-option {
+  padding: 1rem 1.5rem;
+  border: 1px solid #ff8c00;
+  border-radius: 0.75rem;
+  background: white;
+  color: #374151;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.welcome-page-option:hover {
+  border-color: #ff8c00;
+  background-color: rgba(255, 140, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.welcome-page-option.selected {
+  border-color: #ff8c00;
+  background-color: rgba(255, 140, 0, 0.1);
+  color: #ff8c00;
+  box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.1);
+}
+
+.welcome-page-select-container {
+  margin-bottom: 1rem;
+}
+
+.welcome-page-select {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 1px solid #ff8c00;
+  border-radius: 0.75rem;
+  background: white;
+  color: #374151;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.welcome-page-select:focus {
+  outline: none;
+  border-color: #ff8c00;
+  box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.welcome-page-input-container {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.welcome-page-input {
+  flex: 1;
+  padding: 0.875rem 1rem;
+  border: 1px solid #ff8c00;
+  border-radius: 0.75rem;
+  background: white;
+  color: #374151;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.welcome-page-input:focus {
+  outline: none;
+  border-color: #ff8c00;
+  box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.welcome-page-add-btn {
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #ff8c00, #ff6b35);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+}
+
+.welcome-page-add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 140, 0, 0.4);
+}
+
+.welcome-page-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.welcome-page-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 140, 0, 0.1);
+  color: #ff8c00;
+  border: 1px solid rgba(255, 140, 0, 0.3);
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.welcome-page-tag-remove {
+  background: none;
+  border: none;
+  color: #ff8c00;
+  cursor: pointer;
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 0;
+  margin-left: 0.25rem;
+  transition: color 0.2s ease;
+}
+
+.welcome-page-tag-remove:hover {
+  color: #dc2626;
+}
+
+.welcome-page-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.welcome-page-btn {
+  padding: 1rem 2rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.welcome-page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.welcome-page-btn-primary {
+  background: linear-gradient(135deg, #ff8c00, #ff6b35);
+  color: white;
+  flex: 1;
+  box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+}
+
+.welcome-page-btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 140, 0, 0.4);
+}
+
+.welcome-page-btn-secondary {
+  background: rgba(255, 255, 255, 0.5);
+  color: #374151;
+  border: 1px solid rgba(255, 140, 0, 0.3);
+}
+
+.welcome-page-btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 140, 0, 0.05);
+  border-color: #ff8c00;
+}
+
+/* Responsive Design for Welcome Page */
+@media (max-width: 768px) {
+  .welcome-page-container {
+    padding: 1rem;
+  }
+
+  .welcome-page-card {
+    padding: 2rem;
+    margin: 0.5rem;
+  }
+
+  .welcome-page-title {
+    font-size: 1.75rem;
+  }
+
+  .welcome-page-tiggy {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .welcome-page-step-title {
+    font-size: 1.25rem;
+  }
+
+  .welcome-page-options {
+    grid-template-columns: 1fr;
+  }
+
+  .welcome-page-input-container {
+    flex-direction: column;
+  }
+
+  .welcome-page-actions {
+    flex-direction: column;
+  }
+}

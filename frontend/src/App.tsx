@@ -5,6 +5,7 @@ import './App.css';
 import MainPage from './pages/MainPage';
 import LoginPage from './pages/Login';
 import SettingsPage from './pages/Settings';
+import Welcome from './pages/Welcome';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -20,6 +21,12 @@ function App() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleWelcomeComplete = () => {
+    localStorage.setItem('hasCompletedWelcome', 'true');
+    // Force a re-render to show the main page
+    window.location.href = '/';
   };
 
   const handleLogout = () => {
@@ -56,7 +63,11 @@ function App() {
           path="/" 
           element={
             isLoggedIn ? (
-              <MainPage onLogout={handleLogout} />
+              localStorage.getItem('hasCompletedWelcome') ? (
+                <MainPage onLogout={handleLogout} />
+              ) : (
+                <Welcome onComplete={handleWelcomeComplete} />
+              )
             ) : (
               <Navigate to="/login" replace />
             )
