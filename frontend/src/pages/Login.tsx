@@ -3,32 +3,38 @@ import { useNavigate } from "react-router-dom";
 import princetonLogo from "../assets/princeton.png";
 import tigerAvatar from "../assets/tiggy.png";
 import { userAPI } from "../utils/api";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface LoginProps {
   onLogin: (userId: string) => void;
   isLoading?: boolean;
 }
 
-function Login({ onLogin, isLoading = false }: LoginProps) {
-  const navigate = useNavigate();
+function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { loginWithRedirect, isLoading } = useAuth0();
 
   const handleLogin = async () => {
     setIsSubmitting(true);
     setError(null);
 
     try {
-      const user = await userAPI.getUser("68b0a1d3b4170a1e1947edc3");
-      console.log("Retrieved user:", user);
-
-      // Store user ID and call onLogin with the user ID
-      localStorage.setItem("userId", user._id);
-      onLogin(user._id);
-      navigate("/");
+      const callbackUrl = `${window.location.origin}/callback`;
+      console.log('Login button clicked, redirecting with:', {
+        returnTo: "/",
+        callbackUrl
+      });
+    
+      loginWithRedirect({
+        appState: { returnTo: "/" },
+        authorizationParams: {
+          redirect_uri: callbackUrl
+        }
+      });
     } catch (error) {
-      console.error("Failed to create user:", error);
-      setError("Failed to create user. Please try again.");
+      console.error("Failed to login:", error);
+      setError("Failed to login. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

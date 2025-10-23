@@ -28,6 +28,27 @@ def get_user():
     result["_id"] = str(db_user["_id"])
     return result, 200
 
+@user.route("/get-user-by-email", methods=["GET"])
+def get_user_by_email():
+    db = get_database()
+    email = request.args.get("email")
+
+    try:
+        db_user = db.users.find_one({"email": email})
+        if not db_user:
+            return {"error": f"User with email {email} not found"}, 404
+        # expose string id to the model via public 'id' field and avoid touching protected attributes
+        db_user["id"] = str(db_user["_id"])
+        fetched_user = User.model_validate(db_user)
+    except Exception as ex:
+        logging.error("Failed to get user %s: %s", email, ex)
+        return {"error": f"Failed to get user {email}"}, 500
+
+    # expose original MongoDB _id as string in the response
+    result = fetched_user.model_dump()
+    result["_id"] = str(db_user["_id"])
+    return result, 200
+
 
 @user.route("/create-user", methods=["POST"])
 def create_user():
@@ -40,7 +61,7 @@ def create_user():
         return {"error": "Missing required field: email"}, 400
 
     new_user = User(
-        _id=None,
+        _id=payload.get("email"),
         name=payload.get("name"),
         email=payload.get("email"),
         grad_year=payload.get("grad_year"),

@@ -38,6 +38,11 @@ export const userAPI = {
     return apiRequest<User>(`/user/get-user?userId=${userId}`);
   },
 
+  // Get user by email
+  getUserByEmail: async (email: string): Promise<User> => {
+    return apiRequest<User>(`/user/get-user-by-email?email=${email}`);
+  },
+
   // Update user concentration
   updateConcentration: async (userId: string, concentration: string): Promise<{ concentration: string }> => {
     return apiRequest<{ concentration: string }>('/user/update-concentration', {

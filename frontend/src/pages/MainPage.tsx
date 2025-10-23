@@ -5,10 +5,12 @@ import ChatInterface from "../components/ChatInterface";
 import ChatSidebar from "../components/ChatSidebar";
 import type { Message, Chat } from "../types";
 import { chatAPI } from "../utils/api";
+import { userAPI } from "../utils/api";
 import { useNavigate } from "react-router-dom";
 
 // Import avatar images
 import tigerAvatar from "../assets/tiggy.png";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface MainPageProps {
   onLogout: () => void;
@@ -25,6 +27,8 @@ function MainPage({ onLogout }: MainPageProps) {
 
   const messages = currentChat?.messages || [];
 
+  const { user } = useAuth0();
+
   // Auto-scroll to bottom whenever messages or loading state changes
   useEffect(() => {
     scrollToBottom();
@@ -36,8 +40,30 @@ function MainPage({ onLogout }: MainPageProps) {
 
   const getAvatar = () => tigerAvatar;
 
-  const getUser = () => {
-    const userId = localStorage.getItem("userId");
+  const getUser = async () => {
+    const userId = user?.email;
+    console.log("User email:", userId);
+
+
+    try {
+      const response = await userAPI.getUser(userId || "");
+      if (!response.ok) {
+        const createUserResponse = await userAPI.createUser({
+          email: userId || "",
+          name: user?.name || "",
+          grad_year: user?.grad_year || 0,
+          concentration: user?.concentration || "",
+          certificates: user?.certificates || [],
+        });
+        console.log("Created user:", createUserResponse);
+      }
+      console.log("User:", response);
+    } catch (error) {
+      console.error("Unable to get user:", error);
+      navigate("/login");
+      return "";
+    }
+
 
     if (userId === "undefined" || userId === null) {
       navigate("/login");

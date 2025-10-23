@@ -1,27 +1,16 @@
 
-import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 import './App.css';
 import MainPage from './pages/MainPage';
 import LoginPage from './pages/Login';
 import SettingsPage from './pages/Settings';
 import Welcome from './pages/Welcome';
+import Callback from './pages/Callback';
+import { Auth0Provider } from '@auth0/auth0-react';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleLogin = async () => {
-    setIsLoading(true);
-    
-    try {
-      setIsLoggedIn(true);
-    } catch (err) {
-      console.error('Login failed:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { isAuthenticated, isLoading, logout } = useAuth0();
 
   const handleWelcomeComplete = () => {
     localStorage.setItem('hasCompletedWelcome', 'true');
@@ -30,20 +19,25 @@ function App() {
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
+    localStorage.removeItem('userProfile');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('hasCompletedWelcome');
+    logout({ logoutParams: { returnTo: `${window.location.origin}/login` } });
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Router>
       <Routes>
+        <Route path="/callback" element={<Callback />} />
         <Route 
           path="/login" 
           element={
-            !isLoggedIn ? (
-              <LoginPage 
-                onLogin={handleLogin}
-                isLoading={isLoading}
-              />
+            !isAuthenticated ? (
+              <LoginPage />
             ) : (
               <Navigate to="/" replace />
             )
@@ -52,17 +46,17 @@ function App() {
         <Route 
           path="/settings" 
           element={
-            isLoggedIn ? (
+            isAuthenticated ? (
               <SettingsPage onLogout={handleLogout} />
             ) : (
-              <Navigate to="/" replace />
+              <Navigate to="/login" replace />
             )
           } 
         />
         <Route 
           path="/" 
           element={
-            isLoggedIn ? (
+            isAuthenticated ? (
               localStorage.getItem('hasCompletedWelcome') ? (
                 <MainPage onLogout={handleLogout} />
               ) : (
@@ -71,7 +65,7 @@ function App() {
             ) : (
               <Navigate to="/login" replace />
             )
-          } 
+          }
         />
       </Routes>
     </Router>
